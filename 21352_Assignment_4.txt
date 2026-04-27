@@ -1,0 +1,284 @@
+MariaDB [se21352_db]> CREATE TABLE Employee (
+    ->     emp_id INT PRIMARY KEY,
+    ->     first_name VARCHAR(50),
+    ->     last_name VARCHAR(50),
+    ->     email VARCHAR(50),
+    ->     phone_no BIGINT, 
+    ->     hire_date INT,
+    ->     job_profile VARCHAR(50),
+    ->     salary INT,
+    ->     hra VARCHAR(50)
+    -> );
+    -> //
+Query OK, 0 rows affected (0.153 sec)
+
+MariaDB [se21352_db]> CREATE TABLE emp_log (
+    ->     emp_id INT,
+    ->     old_salary INT,
+    ->     new_salary INT,
+    ->     edit_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ->     job_status VARCHAR(50)
+    -> );
+    -> //
+Query OK, 0 rows affected (0.336 sec)
+
+MariaDB [se21352_db]> CREATE TABLE company_info (
+    ->     emp_count INT DEFAULT 0,
+    ->     total_salary_expenses INT DEFAULT 0
+    -> );//
+Query OK, 0 rows affected (0.152 sec)
+
+MariaDB [se21352_db]> INSERT INTO company_info (emp_count, total_salary_expenses) VALUES (0, 0);
+    -> //
+
+
+MariaDB [se21352_db]> delimiter //
+MariaDB [se21352_db]> create trigger after_insert_trigger
+    ->     after insert on Employee
+    ->     for each row
+    ->     begin
+    ->     insert into emp_log(emp_id,old_salary,new_salary,job_status)
+    ->     values (new.emp_id,0,new.salary,'Hired');
+    ->     update company_info
+    ->     set emp_count = emp_count + 1,total_salary_expenses = total_salary_expenses + new.salary;
+    ->     end;
+    ->     //
+Query OK, 0 rows affected (0.058 sec)
+
+MariaDB [se21352_db]> INSERT INTO Employee VALUES (101, 'Veer', 'Sharma', 'veer@yahoo.com', 9876654321, 2006, 'Assistant', 25000, 'Good');
+    -> //
+Query OK, 1 row affected (0.035 sec)
+
+MariaDB [se21352_db]> SELECT * FROM Employee;
+    -> //
++--------+------------+-----------+----------------+------------+-----------+-------------+--------+------+
+| emp_id | first_name | last_name | email          | phone_no   | hire_date | job_profile | salary | hra  |
++--------+------------+-----------+----------------+------------+-----------+-------------+--------+------+
+|    101 | Veer       | Sharma    | veer@yahoo.com | 9876654321 |      2006 | Assistant   |  25000 | Good |
++--------+------------+-----------+----------------+------------+-----------+-------------+--------+------+
+1 row in set (0.001 sec)
+
+MariaDB [se21352_db]> SELECT * FROM emp_log;//
++--------+------------+------------+---------------------+------------+
+| emp_id | old_salary | new_salary | edit_time           | job_status |
++--------+------------+------------+---------------------+------------+
+|    101 |          0 |      25000 | 2026-02-20 12:11:16 | Hired      |
++--------+------------+------------+---------------------+------------+
+1 row in set (0.001 sec)
+
+MariaDB [se21352_db]> SELECT * FROM company_info;//
++-----------+-----------------------+
+| emp_count | total_salary_expenses |
++-----------+-----------------------+
+|         1 |                 25000 |
++-----------+-----------------------+
+1 row in set (0.001 sec)
+
+MariaDB [se21352_db]> INSERT INTO Employee VALUES (102, 'Amit', 'Sharma', 'ami@yahoo.com', 9876654322, 2010, 'Assistant', 45000, 'Good');//
+Query OK, 1 row affected (0.081 sec)
+
+MariaDB [se21352_db]> SELECT * FROM Employee;//
++--------+------------+-----------+----------------+------------+-----------+-------------+--------+------+
+| emp_id | first_name | last_name | email          | phone_no   | hire_date | job_profile | salary | hra  |
++--------+------------+-----------+----------------+------------+-----------+-------------+--------+------+
+|    101 | Veer       | Sharma    | veer@yahoo.com | 9876654321 |      2006 | Assistant   |  25000 | Good |
+|    102 | Amit       | Sharma    | ami@yahoo.com  | 9876654322 |      2010 | Assistant   |  45000 | Good |
++--------+------------+-----------+----------------+------------+-----------+-------------+--------+------+
+2 rows in set (0.003 sec)
+
+MariaDB [se21352_db]> SELECT * FROM emp_log;//
++--------+------------+------------+---------------------+------------+
+| emp_id | old_salary | new_salary | edit_time           | job_status |
++--------+------------+------------+---------------------+------------+
+|    101 |          0 |      25000 | 2026-02-20 12:11:16 | Hired      |
+|    102 |          0 |      45000 | 2026-02-20 12:14:52 | Hired      |
++--------+------------+------------+---------------------+------------+
+2 rows in set (0.001 sec)
+
+MariaDB [se21352_db]> SELECT * FROM company_info;//
++-----------+-----------------------+
+| emp_count | total_salary_expenses |
++-----------+-----------------------+
+|         2 |                 70000 |
++-----------+-----------------------+
+1 row in set (0.001 sec)
+
+
+MariaDB [se21352_db]> create trigger after_update_trigger
+    ->     after update on Employee
+    ->     for each row
+    ->     begin
+    ->     update company_info
+    ->     set total_salary_expenses = total_Salary_expenses - old.salary + new.salary;
+    ->     insert into emp_log (emp_id,old_salary,new_salary,edit_time,job_status) 
+    ->     values (new.emp_id,old.salary,new.salary,NOW(),'Increment');
+    ->     end;
+    ->     //
+Query OK, 0 rows affected (0.061 sec)
+
+
+MariaDB [se21352_db]> update Employee set salary = 55000 where emp_id = 102;
+    -> //
+Query OK, 1 row affected (0.034 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+
+MariaDB [se21352_db]> select * from Employee;//
++--------+------------+-----------+----------------+------------+-----------+-------------+--------+------+
+| emp_id | first_name | last_name | email          | phone_no   | hire_date | job_profile | salary | hra  |
++--------+------------+-----------+----------------+------------+-----------+-------------+--------+------+
+|    101 | Veer       | Sharma    | veer@yahoo.com | 9876654321 |      2006 | Assistant   |  25000 | Good |
+|    102 | Amit       | Sharma    | ami@yahoo.com  | 9876654322 |      2010 | Assistant   |  55000 | Good |
++--------+------------+-----------+----------------+------------+-----------+-------------+--------+------+
+2 rows in set (0.001 sec)
+
+MariaDB [se21352_db]> select * from emp_log;//
++--------+------------+------------+---------------------+------------+
+| emp_id | old_salary | new_salary | edit_time           | job_status |
++--------+------------+------------+---------------------+------------+
+|    101 |          0 |      25000 | 2026-02-20 12:11:16 | Hired      |
+|    102 |          0 |      45000 | 2026-02-20 12:14:52 | Hired      |
+|    102 |      45000 |      55000 | 2026-02-20 12:23:05 | Increment  |
++--------+------------+------------+---------------------+------------+
+3 rows in set (0.001 sec)
+
+MariaDB [se21352_db]> select * from company_info;//
++-----------+-----------------------+
+| emp_count | total_salary_expenses |
++-----------+-----------------------+
+|         2 |                 80000 |
++-----------+-----------------------+
+1 row in set (0.001 sec)
+
+MariaDB [se21352_db]> create trigger after_delete_trigger
+    ->     after delete on Employee
+    ->     for each row 
+    ->     begin
+    ->     update company_info
+    ->     set total_salary_expenses = total_salary_expenses - old.salary,emp_count = emp_count - 1;
+    ->     insert into emp_log(emp_id,old_salary,new_salary,job_status)
+    ->     values (old.emp_id,old.salary,0,'Exited');
+    ->     end;
+    ->     //
+Query OK, 0 rows affected (0.056 sec)
+
+MariaDB [se21352_db]> DELETE FROM Employee where emp_id = 101;
+    -> //
+Query OK, 1 row affected (0.035 sec)
+
+MariaDB [se21352_db]> select * from Employee;
+    -> //
++--------+------------+-----------+---------------+------------+-----------+-------------+--------+------+
+| emp_id | first_name | last_name | email         | phone_no   | hire_date | job_profile | salary | hra  |
++--------+------------+-----------+---------------+------------+-----------+-------------+--------+------+
+|    102 | Amit       | Sharma    | ami@yahoo.com | 9876654322 |      2010 | Assistant   |  55000 | Good |
++--------+------------+-----------+---------------+------------+-----------+-------------+--------+------+
+1 row in set (0.001 sec)
+
+MariaDB [se21352_db]> select * from emp_log;//
++--------+------------+------------+---------------------+------------+
+| emp_id | old_salary | new_salary | edit_time           | job_status |
++--------+------------+------------+---------------------+------------+
+|    101 |          0 |      25000 | 2026-02-20 12:11:16 | Hired      |
+|    102 |          0 |      45000 | 2026-02-20 12:14:52 | Hired      |
+|    102 |      45000 |      55000 | 2026-02-20 12:23:05 | Increment  |
+|    101 |      25000 |          0 | 2026-02-20 12:40:19 | Exited     |
++--------+------------+------------+---------------------+------------+
+4 rows in set (0.001 sec)
+
+MariaDB [se21352_db]> select * from company_info;//
++-----------+-----------------------+
+| emp_count | total_salary_expenses |
++-----------+-----------------------+
+|         1 |                 55000 |
++-----------+-----------------------+
+1 row in set (0.001 sec)
+
+
+MariaDB [se21352_db]> create trigger before_insert_trigger
+    ->     before insert on Employee
+    ->     for each row
+    ->     begin
+    ->     if new.salary < 0 then
+    ->     signal sqlstate '45000' set message_text = 'Salary cannot be negative';
+    ->     end if;
+    ->     end;
+    ->     //
+Query OK, 0 rows affected (0.058 sec)
+
+MariaDB [se21352_db]> insert into Employee(emp_id,first_name,last_name,email,phone_no,hire_date,job_profile,salary,hra) values(110,'mohan','sharma','mohan@gmail.com',8956471230,2010,'assistant',-30000,'good');//
+ERROR 1644 (45000): Salary cannot be negative
+
+
+MariaDB [se21352_db]> create trigger before_update_trigger
+    -> before update on Employee
+    -> for each row
+    -> begin
+    -> if new.salary > 50000 then 
+    -> set new.salary = 40000;
+    -> end if;
+    -> end;
+    -> //
+Query OK, 0 rows affected (0.160 sec)
+
+MariaDB [se21352_db]> insert into Employee(emp_id,first_name,last_name,email,phone_no,hire_date,job_profile,salary,hra) values(103,'Mohit','Deshpande','mohit@gmail.com',8795212589,2011,'Engineer',45000,'Good');//
+Query OK, 1 row affected (0.035 sec)
+
+MariaDB [se21352_db]> select * from Employee;
+    -> //
++--------+------------+-----------+-----------------+------------+-----------+-------------+--------+------+
+| emp_id | first_name | last_name | email           | phone_no   | hire_date | job_profile | salary | hra  |
++--------+------------+-----------+-----------------+------------+-----------+-------------+--------+------+
+|    102 | Amit       | Sharma    | ami@yahoo.com   | 9876654322 |      2010 | Assistant   |  55000 | Good |
+|    103 | Mohit      | Deshpande | mohit@gmail.com | 8795212589 |      2011 | Engineer    |  45000 | Good |
++--------+------------+-----------+-----------------+------------+-----------+-------------+--------+------+
+2 rows in set (27.412 sec)
+
+MariaDB [se21352_db]> update Employee set salary = 65000 where emp_id = 103;
+    -> //
+Query OK, 1 row affected (0.029 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [se21352_db]> select * from Employee;//
++--------+------------+-----------+-----------------+------------+-----------+-------------+--------+------+
+| emp_id | first_name | last_name | email           | phone_no   | hire_date | job_profile | salary | hra  |
++--------+------------+-----------+-----------------+------------+-----------+-------------+--------+------+
+|    102 | Amit       | Sharma    | ami@yahoo.com   | 9876654322 |      2010 | Assistant   |  55000 | Good |
+|    103 | Mohit      | Deshpande | mohit@gmail.com | 8795212589 |      2011 | Engineer    |  40000 | Good |
++--------+------------+-----------+-----------------+------------+-----------+-------------+--------+------+
+2 rows in set (0.001 sec)
+
+
+MariaDB [se21352_db]> insert into Employee(emp_id,first_name,last_name,email,phone_no,hire_date,job_profile,salary,hra) values(104,'Rohan','Verma','rohan@gmail.com',8457966321,2000,'Manager',75000,'Good');//
+Query OK, 1 row affected (5 min 38.259 sec)
+
+
+MariaDB [se21352_db]> select * from Employee;//
++--------+------------+-----------+-----------------+------------+-----------+-------------+--------+------+
+| emp_id | first_name | last_name | email           | phone_no   | hire_date | job_profile | salary | hra  |
++--------+------------+-----------+-----------------+------------+-----------+-------------+--------+------+
+|    102 | Amit       | Sharma    | ami@yahoo.com   | 9876654322 |      2010 | Assistant   |  55000 | Good |
+|    103 | Mohit      | Deshpande | mohit@gmail.com | 8795212589 |      2011 | Engineer    |  40000 | Good |
+|    104 | Rohan      | Verma     | rohan@gmail.com | 8457966321 |      2000 | Manager     |  75000 | Good |
++--------+------------+-----------+-----------------+------------+-----------+-------------+--------+------+
+3 rows in set (0.001 sec)
+
+
+MariaDB [se21352_db]> create trigger before_delete_trigger
+    -> before delete on Employee
+    -> for each row
+    -> begin
+    -> if old.job_profile = 'Manager' then
+    -> signal sqlstate '45000' set message_text = 'Manager cannot be deleted';
+    -> end if;
+    -> end;
+    -> //
+Query OK, 0 rows affected (0.072 sec)
+
+MariaDB [se21352_db]> delete from Employee where emp_id = 104;
+    -> //
+ERROR 1644 (45000): Manager cannot be deleted
+
+
+
+

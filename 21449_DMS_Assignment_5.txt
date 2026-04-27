@@ -1,0 +1,555 @@
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+
+		An institute maintains details of all teachers, including name, qualifications, department details,
+		experience, salary structure, date of joining, appointement_nature and area of expertise. Design
+		and implement MongoDB queries to perform CRUD operations on the teachers collection for
+		various administrative tasks. Create the above collection, insert suitable documents and design
+		updation and retrieval queries requiring comparison and logical operators, save() method, etc.
+
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+
+
+*****************************************************************************************************************************
+
+							Creating Collection
+
+*****************************************************************************************************************************
+
+
+
+> db.createCollection("teachers")
+{ "ok" : 1 }
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							Inserting Documents 
+
+*****************************************************************************************************************************
+> db.teachers.insertMany([
+... {
+...   _id: 1,
+...   name: "Dr. Anil Sharma",
+...   qualifications: ["B.Tech", "M.Tech", "PhD"],
+...   department: {
+...     dept_id: 101,
+...     dept_name: "Computer Science",
+...     hod: "Dr. Mehta"
+...   },
+...   experience: 12,
+...   salary_structure: {
+...     basic: 80000,
+...     hra: 20000,
+...     allowances: 10000
+...   },
+...   date_of_joining: new Date("2012-06-15"),
+...   appointment_nature: "Permanent",
+...   expertise: ["DBMS", "MongoDB", "Data Structures"]
+... },
+... {
+...   _id: 2,
+...   name: "Prof. Kavita Rao",
+...   qualifications: ["M.Sc", "PhD"],
+...   department: {
+...     dept_id: 102,
+...     dept_name: "Mathematics",
+...     hod: "Dr. Iyer"
+...   },
+...   experience: 8,
+...   salary_structure: {
+...     basic: 60000,
+...     hra: 15000,
+...     allowances: 8000
+...   },
+...   date_of_joining: new Date("2016-08-10"),
+...   appointment_nature: "Contract",
+...   expertise: ["Algebra", "Statistics"]
+... },
+... {
+...   _id: 3,
+...   name: "Mr. Raj Patel",
+...   qualifications: ["B.Tech", "M.Tech"],
+...   department: {
+...     dept_id: 101,
+...     dept_name: "Computer Science",
+...     hod: "Dr. Mehta"
+...   },
+...   experience: 5,
+...   salary_structure: {
+...     basic: 50000,
+...     hra: 12000,
+...     allowances: 5000
+...   },
+...   date_of_joining: new Date("2019-01-20"),
+...   appointment_nature: "Temporary",
+...   expertise: ["Networking", "Cyber Security"]
+... }
+... ])
+{ "acknowledged" : true, "insertedIds" : [ 1, 2, 3 ] }
+> 
+> 
+_____________________________________________________________________________________________________________________________
+
+							READ Queries
+							
+*****************************************************************************************************************************
+
+						    a) Display all teachers
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> db.teachers.find()
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Iyer" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+{ "_id" : 3, "name" : "Mr. Raj Patel", "qualifications" : [ "B.Tech", "M.Tech" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 5, "salary_structure" : { "basic" : 50000, "hra" : 12000, "allowances" : 5000 }, "date_of_joining" : ISODate("2019-01-20T00:00:00Z"), "appointment_nature" : "Temporary", "expertise" : [ "Networking", "Cyber Security" ] }
+> 
+> 
+*****************************************************************************************************************************
+
+						 b) Teachers with experience > 5
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> db.teachers.find({ experience: { $gt: 5 } })
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Iyer" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+						c) Teachers in Computer Science department
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> db.teachers.find({ "department.dept_name": "Computer Science" })
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures" ] }
+{ "_id" : 3, "name" : "Mr. Raj Patel", "qualifications" : [ "B.Tech", "M.Tech" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 5, "salary_structure" : { "basic" : 50000, "hra" : 12000, "allowances" : 5000 }, "date_of_joining" : ISODate("2019-01-20T00:00:00Z"), "appointment_nature" : "Temporary", "expertise" : [ "Networking", "Cyber Security" ] }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							d) Using $and operator
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> 
+> db.teachers.find({$and: [
+...     { experience: { $gt: 5 } },
+...     { "salary_structure.basic": { $gt: 60000 } }
+...   ]
+... })
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures" ] }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							e) Using $or operator
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> db.teachers.find({$or: [
+...     { appointment_nature: "Permanent" },
+...     { experience: { $gt: 10 } }
+...   ]
+... })
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures" ] }
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							f) Query on array field
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> db.teachers.find({ expertise: "MongoDB" })
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures" ] }
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							 g) Salary range query
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> db.teachers.find({
+...   "salary_structure.basic": { $gte: 50000, $lte: 80000 }
+... })
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Iyer" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+{ "_id" : 3, "name" : "Mr. Raj Patel", "qualifications" : [ "B.Tech", "M.Tech" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 5, "salary_structure" : { "basic" : 50000, "hra" : 12000, "allowances" : 5000 }, "date_of_joining" : ISODate("2019-01-20T00:00:00Z"), "appointment_nature" : "Temporary", "expertise" : [ "Networking", "Cyber Security" ] }
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							h) Date comparison
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> 
+> db.teachers.find({
+...   date_of_joining: { $gt: new Date("2015-01-01") }
+... })
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Iyer" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+{ "_id" : 3, "name" : "Mr. Raj Patel", "qualifications" : [ "B.Tech", "M.Tech" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 5, "salary_structure" : { "basic" : 50000, "hra" : 12000, "allowances" : 5000 }, "date_of_joining" : ISODate("2019-01-20T00:00:00Z"), "appointment_nature" : "Temporary", "expertise" : [ "Networking", "Cyber Security" ] }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							i) Projection
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> db.teachers.find({}, { name: 1, experience: 1, _id: 0 })
+{ "name" : "Dr. Anil Sharma", "experience" : 12 }
+{ "name" : "Prof. Kavita Rao", "experience" : 8 }
+{ "name" : "Mr. Raj Patel", "experience" : 5 }
+> 
+> 
+>
+_____________________________________________________________________________________________________________________________
+
+						        4. UPDATE Queries
+						        
+*****************************************************************************************************************************
+
+							a) Update Salary
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> db.teachers.updateOne(
+... { name: "Mr. Raj Patel" },
+...   { $set: { "salary_structure.basic": 55000 } }
+... )
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+> 
+> 
+> 
+> 
+> 
+> db.teachers.find()
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Iyer" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+{ "_id" : 3, "name" : "Mr. Raj Patel", "qualifications" : [ "B.Tech", "M.Tech" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 5, "salary_structure" : { "basic" : 55000, "hra" : 12000, "allowances" : 5000 }, "date_of_joining" : ISODate("2019-01-20T00:00:00Z"), "appointment_nature" : "Temporary", "expertise" : [ "Networking", "Cyber Security" ] }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+						   b) Update embedded document
+
+*****************************************************************************************************************************	
+> 
+> 
+> 
+> db.teachers.updateOne(
+...  { name: "Prof. Kavita Rao" },
+...   { $set: { "department.hod": "Dr. Sharma" } }
+... )
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+> 
+> 
+> 
+> 
+> 
+> db.teachers.find()
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Sharma" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+{ "_id" : 3, "name" : "Mr. Raj Patel", "qualifications" : [ "B.Tech", "M.Tech" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 5, "salary_structure" : { "basic" : 55000, "hra" : 12000, "allowances" : 5000 }, "date_of_joining" : ISODate("2019-01-20T00:00:00Z"), "appointment_nature" : "Temporary", "expertise" : [ "Networking", "Cyber Security" ] }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+						 c) Add value to array
+
+*****************************************************************************************************************************	
+> 
+> 
+> 
+> db.teachers.updateOne(
+...  { name: "Dr. Anil Sharma" },
+...   { $push: { expertise: "AI" } }
+... )
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+> 
+> 
+> 
+> 
+> db.teachers.find()
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures", "AI" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Sharma" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+{ "_id" : 3, "name" : "Mr. Raj Patel", "qualifications" : [ "B.Tech", "M.Tech" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 5, "salary_structure" : { "basic" : 55000, "hra" : 12000, "allowances" : 5000 }, "date_of_joining" : ISODate("2019-01-20T00:00:00Z"), "appointment_nature" : "Temporary", "expertise" : [ "Networking", "Cyber Security" ] }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+						 d) Update multiple documents
+
+*****************************************************************************************************************************	
+> 
+> 
+> 
+> 
+> db.teachers.updateMany(
+...  { appointment_nature: "Temporary" },
+...   { $set: { appointment_nature: "Contract" } }
+... )
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> db.teachers.find()
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures", "AI" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Sharma" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+{ "_id" : 3, "name" : "Mr. Raj Patel", "qualifications" : [ "B.Tech", "M.Tech" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 5, "salary_structure" : { "basic" : 55000, "hra" : 12000, "allowances" : 5000 }, "date_of_joining" : ISODate("2019-01-20T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Networking", "Cyber Security" ] }
+> 
+> 
+> 
+_____________________________________________________________________________________________________________________________
+
+							DELETE Queries
+							
+*****************************************************************************************************************************
+
+						     a) Delete one teacher
+
+*****************************************************************************************************************************		
+> 
+> 
+> 
+> 
+> db.teachers.deleteOne({ name: "Mr. Raj Patel" })
+{ "acknowledged" : true, "deletedCount" : 1 }
+> 
+> 
+> 
+> 
+> db.teachers.find()
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures", "AI" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Sharma" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+						     a) Delete multiple teachers
+
+*****************************************************************************************************************************	
+> 
+> 
+> 
+> 
+> db.teachers.deleteMany({ experience: { $lt: 5 } })
+{ "acknowledged" : true, "deletedCount" : 0 }
+> 
+> 
+> 
+> 
+> 
+> 
+> db.teachers.find()
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures", "AI" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Sharma" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+> 
+> 
+> 
+_____________________________________________________________________________________________________________________________
+
+							Using `save()` Method
+							
+*****************************************************************************************************************************
+
+							a) Insert using save()			    
+
+*****************************************************************************************************************************	
+> 
+> 
+> 
+> db.teachers.save({
+...   _id: 4,
+...   name: "Dr. Neha Singh",
+...   qualifications: ["B.Sc", "M.Sc", "PhD"],
+...   department: {
+...     dept_id: 103,
+...     dept_name: "Physics",
+...     hod: "Dr. Kumar"
+...   },
+...   experience: 10,
+...   salary_structure: {
+...     basic: 70000,
+...     hra: 18000,
+...     allowances: 9000
+...   },
+...   date_of_joining: new Date("2014-03-12"),
+...   appointment_nature: "Permanent",
+...   expertise: ["Quantum Mechanics", "Optics"]
+... })
+WriteResult({ "nMatched" : 0, "nUpserted" : 1, "nModified" : 0, "_id" : 4 })
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> db.teachers.find()
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures", "AI" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Sharma" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+{ "_id" : 4, "name" : "Dr. Neha Singh", "qualifications" : [ "B.Sc", "M.Sc", "PhD" ], "department" : { "dept_id" : 103, "dept_name" : "Physics", "hod" : "Dr. Kumar" }, "experience" : 10, "salary_structure" : { "basic" : 70000, "hra" : 18000, "allowances" : 9000 }, "date_of_joining" : ISODate("2014-03-12T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "Quantum Mechanics", "Optics" ] }
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							b) Update using save()		    
+
+*****************************************************************************************************************************	
+> 
+> 
+> 
+> 
+> db.teachers.save({
+...   _id: 4,
+...   name: "Dr. Neha Singh",
+...   experience: 11
+... })
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> 
+> 
+_____________________________________________________________________________________________________________________________
+
+						    Administrative queries
+						
+*****************************************************************************************************************************
+
+						a) Teachers with experience > 10	    
+
+*****************************************************************************************************************************	
+> 
+> 
+> 
+> 
+> db.teachers.find({ experience: { $gt: 10 } })
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures", "AI" ] }
+{ "_id" : 4, "name" : "Dr. Neha Singh", "experience" : 11 }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+						b) Teachers with 3 qualifications	    
+
+*****************************************************************************************************************************	
+> 
+> 
+> 
+> db.teachers.find({ qualifications: { $size: 3 } })
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures", "AI" ] }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+						c) Sort teachers by salary(highest to lowest)	    
+
+*****************************************************************************************************************************	
+> 
+> 
+> 
+> db.teachers.find().sort({ "salary_structure.basic": -1 })
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures", "AI" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Sharma" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+{ "_id" : 4, "name" : "Dr. Neha Singh", "experience" : 11 }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							d) Highest paid teacher	    
+
+*****************************************************************************************************************************	
+> 
+> 
+> db.teachers.find().sort({ "salary_structure.basic": -1 }).limit(1)
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures", "AI" ] }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							e) Update query with upsert    
+
+*****************************************************************************************************************************	
+> 
+> 
+> 
+> db.teachers.updateOne( {"name" : "Dr. Anil Sharma"}, { $setOnInsert:
+... { "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 103, "dept_name" : "Mathematics and Computing", "hod" : "Dr. Sharma" }, "experience" : 13, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures", "AI" ] }
+...  }, { upsert: true })
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 0 }
+> ]
+> 
+> 
+> 
+> 
+> db.teachers.find()
+{ "_id" : 1, "name" : "Dr. Anil Sharma", "qualifications" : [ "B.Tech", "M.Tech", "PhD" ], "department" : { "dept_id" : 101, "dept_name" : "Computer Science", "hod" : "Dr. Mehta" }, "experience" : 12, "salary_structure" : { "basic" : 80000, "hra" : 20000, "allowances" : 10000 }, "date_of_joining" : ISODate("2012-06-15T00:00:00Z"), "appointment_nature" : "Permanent", "expertise" : [ "DBMS", "MongoDB", "Data Structures", "AI" ] }
+{ "_id" : 2, "name" : "Prof. Kavita Rao", "qualifications" : [ "M.Sc", "PhD" ], "department" : { "dept_id" : 102, "dept_name" : "Mathematics", "hod" : "Dr. Sharma" }, "experience" : 8, "salary_structure" : { "basic" : 60000, "hra" : 15000, "allowances" : 8000 }, "date_of_joining" : ISODate("2016-08-10T00:00:00Z"), "appointment_nature" : "Contract", "expertise" : [ "Algebra", "Statistics" ] }
+{ "_id" : 4, "name" : "Dr. Neha Singh", "experience" : 11 }
+> 
+> 
+> 
+> 
+
+
+

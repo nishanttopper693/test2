@@ -1,0 +1,1609 @@
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+
+		Customers of an online marketplace frequently search for products and their orders, and the search
+		becomes slow as the products and orders grow. Implement all types of indexes on the products
+		and order MongoDB collections
+
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+							Creating Collection
+
+*****************************************************************************************************************************
+
+> use marketplaceDB
+switched to db marketplaceDB
+>
+>
+>
+>
+>
+>
+> db.createCollection("products")
+{ "ok" : 1 }
+>
+>
+>
+>
+>
+> db.createCollection("orders")
+{ "ok" : 1 }
+>
+>
+>
+_____________________________________________________________________________________________________________________________
+
+							Inserting Sample Documents
+							
+*****************************************************************************************************************************
+
+							  a) Products Collection
+
+*****************************************************************************************************************************
+
+>
+>
+> db.products.insertMany([
+... {
+...   product_id: 1,
+...   name: "Laptop Pro",
+...   category: "Electronics",
+...   price: 75000,
+...   brand: "TechBrand",
+...   stock: 50,
+...   description: "High performance laptop with SSD and 16GB RAM",
+...   tags: ["laptop", "electronics", "computer"],
+...   specs: {
+...     processor: "Intel i7",
+...     ram: "16GB",
+...     storage: "512GB SSD"
+...   }
+... },
+... {
+...   product_id: 2,
+...   name: "Wireless Mouse",
+...   category: "Accessories",
+...   price: 1200,
+...   brand: "ClickTech",
+...   stock: 200,
+...   description: "Ergonomic wireless mouse",
+...   tags: ["mouse", "wireless", "accessories"],
+...   specs: {
+...     connectivity: "Bluetooth",
+...     battery: "AA"
+...   }
+... }
+... ])
+{
+	"acknowledged" : true,
+	"insertedIds" : [
+		ObjectId("69d4a82e64a3f6ce7172651a"),
+		ObjectId("69d4a82e64a3f6ce7172651b")
+	]
+}
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							  b)Orders Collection
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> db.orders.insertMany([
+... {
+...   order_id: 101,
+...   customer_id: 501,
+...   order_date: new Date("2025-03-01"),
+...   status: "Delivered",
+...   total_amount: 76200,
+...   items: [
+...     {
+...       product_id: 1,
+...       quantity: 1,
+...       price: 75000
+...     },
+...     {
+...       product_id: 2,
+...       quantity: 1,
+...       price: 1200
+...     }
+...   ],
+...   shipping: {
+...     address: "Pune, India",
+...     city: "Pune",
+...     pincode: 411001
+...   }
+... },
+... {
+...   order_id: 102,
+...   customer_id: 502,
+...   order_date: new Date("2025-03-05"),
+...   status: "Pending",
+...   total_amount: 1200,
+...   items: [
+...     {
+...       product_id: 2,
+...       quantity: 1,
+...       price: 1200
+...     }
+...   ],
+...   shipping: {
+...     address: "Mumbai, India",
+...     city: "Mumbai",
+...     pincode: 400001
+...   }
+... }
+... ])
+{
+	"acknowledged" : true,
+	"insertedIds" : [
+		ObjectId("69d4a85564a3f6ce7172651c"),
+		ObjectId("69d4a85564a3f6ce7172651d")
+	]
+}
+> 
+> 
+> 
+> 
+_____________________________________________________________________________________________________________________________
+
+							      Indexing
+							
+*****************************************************************************************************************************
+
+							  a) Simple Index
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> db.products.createIndex({ name: 1 })
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 1,
+	"numIndexesAfter" : 2,
+	"ok" : 1
+}
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> db.orders.createIndex({ order_date: -1 })
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 1,
+	"numIndexesAfter" : 2,
+	"ok" : 1
+}
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							  b) Compound Index
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> db.products.createIndex({ category: 1, price: 1 })
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 2,
+	"numIndexesAfter" : 3,
+	"ok" : 1
+}
+> 
+> 
+> 
+> 
+> 
+> db.orders.createIndex({ customer_id: 1, order_date: -1 })
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 2,
+	"numIndexesAfter" : 3,
+	"ok" : 1
+}
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							c) Embedded Field Index	
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> db.products.createIndex({ "specs.processor": 1 })
+
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 3,
+	"numIndexesAfter" : 4,
+	"ok" : 1
+}
+> 
+> 
+> 
+> 
+> 
+> 
+> db.orders.createIndex({ "shipping.city": 1 })
+
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 3,
+	"numIndexesAfter" : 4,
+	"ok" : 1
+}
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							d) Text Index
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> db.products.createIndex({
+...   name: "text",
+...   description: "text",
+...   category: "text"
+... })
+
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 4,
+	"numIndexesAfter" : 5,
+	"ok" : 1
+}
+> 
+> 
+> 
+> 
+> 
+> 
+> db.products.find({ $text: { $search: "laptop SSD" } })
+{ "_id" : ObjectId("69d4a82e64a3f6ce7172651a"), "product_id" : 1, "name" : "Laptop Pro", "category" : "Electronics", "price" : 75000, "brand" : "TechBrand", "stock" : 50, "description" : "High performance laptop with SSD and 16GB RAM", "tags" : [ "laptop", "electronics", "computer" ], "specs" : { "processor" : "Intel i7", "ram" : "16GB", "storage" : "512GB SSD" } }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+						   e) Array Index (Multikey Index)
+
+*****************************************************************************************************************************
+
+> 
+> 
+> 
+> db.products.createIndex({ tags: 1 })
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 5,
+	"numIndexesAfter" : 6,
+	"ok" : 1
+}
+> 
+> 
+> 
+> 
+> 
+> 
+> db.orders.createIndex({ "items.product_id": 1 })
+
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 4,
+	"numIndexesAfter" : 5,
+	"ok" : 1
+}
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> db.products.find({ tags: "electronics" })
+{ "_id" : ObjectId("69d4a82e64a3f6ce7172651a"), "product_id" : 1, "name" : "Laptop Pro", "category" : "Electronics", "price" : 75000, "brand" : "TechBrand", "stock" : 50, "description" : "High performance laptop with SSD and 16GB RAM", "tags" : [ "laptop", "electronics", "computer" ], "specs" : { "processor" : "Intel i7", "ram" : "16GB", "storage" : "512GB SSD" } }
+> 
+> 
+> 
+> 
+> 
+> 
+> db.orders.find({ "items.product_id": 1 })
+{ "_id" : ObjectId("69d4a85564a3f6ce7172651c"), "order_id" : 101, "customer_id" : 501, "order_date" : ISODate("2025-03-01T00:00:00Z"), "status" : "Delivered", "total_amount" : 76200, "items" : [ { "product_id" : 1, "quantity" : 1, "price" : 75000 }, { "product_id" : 2, "quantity" : 1, "price" : 1200 } ], "shipping" : { "address" : "Pune, India", "city" : "Pune", "pincode" : 411001 } }
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							Verifying Indexes
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> db.products.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "marketplaceDB.products"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : 1
+		},
+		"name" : "name_1",
+		"ns" : "marketplaceDB.products"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"category" : 1,
+			"price" : 1
+		},
+		"name" : "category_1_price_1",
+		"ns" : "marketplaceDB.products"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"specs.processor" : 1
+		},
+		"name" : "specs.processor_1",
+		"ns" : "marketplaceDB.products"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"_fts" : "text",
+			"_ftsx" : 1
+		},
+		"name" : "name_text_description_text_category_text",
+		"ns" : "marketplaceDB.products",
+		"weights" : {
+			"category" : 1,
+			"description" : 1,
+			"name" : 1
+		},
+		"default_language" : "english",
+		"language_override" : "language",
+		"textIndexVersion" : 3
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"tags" : 1
+		},
+		"name" : "tags_1",
+		"ns" : "marketplaceDB.products"
+	}
+]
+> 
+> 
+> 
+> 
+> 
+> 
+> db.orders.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "marketplaceDB.orders"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"order_date" : -1
+		},
+		"name" : "order_date_-1",
+		"ns" : "marketplaceDB.orders"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"customer_id" : 1,
+			"order_date" : -1
+		},
+		"name" : "customer_id_1_order_date_-1",
+		"ns" : "marketplaceDB.orders"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"shipping.city" : 1
+		},
+		"name" : "shipping.city_1",
+		"ns" : "marketplaceDB.orders"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"items.product_id" : 1
+		},
+		"name" : "items.product_id_1",
+		"ns" : "marketplaceDB.orders"
+	}
+]
+> 
+> 
+> 
+								explain()
+*****************************************************************************************************************************
+
+							1. Simple Index – `explain()`
+
+*****************************************************************************************************************************
+
+> 
+> 
+> db.products.find({ name: "Laptop Pro" }).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "marketplaceDB.products",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"name" : {
+				"$eq" : "Laptop Pro"
+			}
+		},
+		"winningPlan" : {
+			"stage" : "FETCH",
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"keyPattern" : {
+					"name" : 1
+				},
+				"indexName" : "name_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"name" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"name" : [
+						"[\"Laptop Pro\", \"Laptop Pro\"]"
+					]
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 1,
+		"executionTimeMillis" : 1,
+		"totalKeysExamined" : 1,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "FETCH",
+			"nReturned" : 1,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 2,
+			"advanced" : 1,
+			"needTime" : 0,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"docsExamined" : 1,
+			"alreadyHasObj" : 0,
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"nReturned" : 1,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 2,
+				"advanced" : 1,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"keyPattern" : {
+					"name" : 1
+				},
+				"indexName" : "name_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"name" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"name" : [
+						"[\"Laptop Pro\", \"Laptop Pro\"]"
+					]
+				},
+				"keysExamined" : 1,
+				"seeks" : 1,
+				"dupsTested" : 0,
+				"dupsDropped" : 0
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "dbsl-21",
+		"port" : 27017,
+		"version" : "4.2.13",
+		"gitVersion" : "82dd40f60c55dae12426c08fd7150d79a0e28e23"
+	},
+	"ok" : 1
+}
+> 
+> 
+> 
+> 
+> db.orders.find().sort({ order_date: -1 }).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "marketplaceDB.orders",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			
+		},
+		"winningPlan" : {
+			"stage" : "FETCH",
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"keyPattern" : {
+					"order_date" : -1
+				},
+				"indexName" : "order_date_-1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"order_date" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"order_date" : [
+						"[MaxKey, MinKey]"
+					]
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 2,
+		"executionTimeMillis" : 2,
+		"totalKeysExamined" : 2,
+		"totalDocsExamined" : 2,
+		"executionStages" : {
+			"stage" : "FETCH",
+			"nReturned" : 2,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 3,
+			"advanced" : 2,
+			"needTime" : 0,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"docsExamined" : 2,
+			"alreadyHasObj" : 0,
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"nReturned" : 2,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 3,
+				"advanced" : 2,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"keyPattern" : {
+					"order_date" : -1
+				},
+				"indexName" : "order_date_-1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"order_date" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"order_date" : [
+						"[MaxKey, MinKey]"
+					]
+				},
+				"keysExamined" : 2,
+				"seeks" : 1,
+				"dupsTested" : 0,
+				"dupsDropped" : 0
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "dbsl-21",
+		"port" : 27017,
+		"version" : "4.2.13",
+		"gitVersion" : "82dd40f60c55dae12426c08fd7150d79a0e28e23"
+	},
+	"ok" : 1
+}
+> 
+> 
+> 
+*****************************************************************************************************************************
+
+							 2. Compound Index – `explain()`
+
+*****************************************************************************************************************************
+> 
+> 
+> db.products.find({
+...   category: "Electronics",
+...   price: { $lt: 80000 }
+... }).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "marketplaceDB.products",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"$and" : [
+				{
+					"category" : {
+						"$eq" : "Electronics"
+					}
+				},
+				{
+					"price" : {
+						"$lt" : 80000
+					}
+				}
+			]
+		},
+		"winningPlan" : {
+			"stage" : "FETCH",
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"keyPattern" : {
+					"category" : 1,
+					"price" : 1
+				},
+				"indexName" : "category_1_price_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"category" : [ ],
+					"price" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"category" : [
+						"[\"Electronics\", \"Electronics\"]"
+					],
+					"price" : [
+						"[-inf.0, 80000.0)"
+					]
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 1,
+		"executionTimeMillis" : 2,
+		"totalKeysExamined" : 1,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "FETCH",
+			"nReturned" : 1,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 2,
+			"advanced" : 1,
+			"needTime" : 0,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"docsExamined" : 1,
+			"alreadyHasObj" : 0,
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"nReturned" : 1,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 2,
+				"advanced" : 1,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"keyPattern" : {
+					"category" : 1,
+					"price" : 1
+				},
+				"indexName" : "category_1_price_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"category" : [ ],
+					"price" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"category" : [
+						"[\"Electronics\", \"Electronics\"]"
+					],
+					"price" : [
+						"[-inf.0, 80000.0)"
+					]
+				},
+				"keysExamined" : 1,
+				"seeks" : 1,
+				"dupsTested" : 0,
+				"dupsDropped" : 0
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "dbsl-21",
+		"port" : 27017,
+		"version" : "4.2.13",
+		"gitVersion" : "82dd40f60c55dae12426c08fd7150d79a0e28e23"
+	},
+	"ok" : 1
+}
+> 
+> 
+> 
+> 
+> db.orders.find({
+...   customer_id: 501
+... }).sort({ order_date: -1 }).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "marketplaceDB.orders",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"customer_id" : {
+				"$eq" : 501
+			}
+		},
+		"winningPlan" : {
+			"stage" : "FETCH",
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"keyPattern" : {
+					"customer_id" : 1,
+					"order_date" : -1
+				},
+				"indexName" : "customer_id_1_order_date_-1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"customer_id" : [ ],
+					"order_date" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"customer_id" : [
+						"[501.0, 501.0]"
+					],
+					"order_date" : [
+						"[MaxKey, MinKey]"
+					]
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 1,
+		"executionTimeMillis" : 2,
+		"totalKeysExamined" : 1,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "FETCH",
+			"nReturned" : 1,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 2,
+			"advanced" : 1,
+			"needTime" : 0,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"docsExamined" : 1,
+			"alreadyHasObj" : 0,
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"nReturned" : 1,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 2,
+				"advanced" : 1,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"keyPattern" : {
+					"customer_id" : 1,
+					"order_date" : -1
+				},
+				"indexName" : "customer_id_1_order_date_-1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"customer_id" : [ ],
+					"order_date" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"customer_id" : [
+						"[501.0, 501.0]"
+					],
+					"order_date" : [
+						"[MaxKey, MinKey]"
+					]
+				},
+				"keysExamined" : 1,
+				"seeks" : 1,
+				"dupsTested" : 0,
+				"dupsDropped" : 0
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "dbsl-21",
+		"port" : 27017,
+		"version" : "4.2.13",
+		"gitVersion" : "82dd40f60c55dae12426c08fd7150d79a0e28e23"
+	},
+	"ok" : 1
+}
+> 
+> 
+*****************************************************************************************************************************
+
+						3. Embedded Field Index – `explain()`
+
+*****************************************************************************************************************************
+> 
+> 
+> db.products.find({
+...   "specs.processor": "Intel i7"
+... }).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "marketplaceDB.products",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"specs.processor" : {
+				"$eq" : "Intel i7"
+			}
+		},
+		"winningPlan" : {
+			"stage" : "FETCH",
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"keyPattern" : {
+					"specs.processor" : 1
+				},
+				"indexName" : "specs.processor_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"specs.processor" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"specs.processor" : [
+						"[\"Intel i7\", \"Intel i7\"]"
+					]
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 1,
+		"executionTimeMillis" : 2,
+		"totalKeysExamined" : 1,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "FETCH",
+			"nReturned" : 1,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 2,
+			"advanced" : 1,
+			"needTime" : 0,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"docsExamined" : 1,
+			"alreadyHasObj" : 0,
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"nReturned" : 1,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 2,
+				"advanced" : 1,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"keyPattern" : {
+					"specs.processor" : 1
+				},
+				"indexName" : "specs.processor_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"specs.processor" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"specs.processor" : [
+						"[\"Intel i7\", \"Intel i7\"]"
+					]
+				},
+				"keysExamined" : 1,
+				"seeks" : 1,
+				"dupsTested" : 0,
+				"dupsDropped" : 0
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "dbsl-21",
+		"port" : 27017,
+		"version" : "4.2.13",
+		"gitVersion" : "82dd40f60c55dae12426c08fd7150d79a0e28e23"
+	},
+	"ok" : 1
+}
+> 
+> 
+> 
+> 
+> 
+> 
+> db.orders.find({
+...   "shipping.city": "Pune"
+... }).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "marketplaceDB.orders",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"shipping.city" : {
+				"$eq" : "Pune"
+			}
+		},
+		"winningPlan" : {
+			"stage" : "FETCH",
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"keyPattern" : {
+					"shipping.city" : 1
+				},
+				"indexName" : "shipping.city_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"shipping.city" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"shipping.city" : [
+						"[\"Pune\", \"Pune\"]"
+					]
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 1,
+		"executionTimeMillis" : 2,
+		"totalKeysExamined" : 1,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "FETCH",
+			"nReturned" : 1,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 2,
+			"advanced" : 1,
+			"needTime" : 0,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"docsExamined" : 1,
+			"alreadyHasObj" : 0,
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"nReturned" : 1,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 2,
+				"advanced" : 1,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"keyPattern" : {
+					"shipping.city" : 1
+				},
+				"indexName" : "shipping.city_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"shipping.city" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"shipping.city" : [
+						"[\"Pune\", \"Pune\"]"
+					]
+				},
+				"keysExamined" : 1,
+				"seeks" : 1,
+				"dupsTested" : 0,
+				"dupsDropped" : 0
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "dbsl-21",
+		"port" : 27017,
+		"version" : "4.2.13",
+		"gitVersion" : "82dd40f60c55dae12426c08fd7150d79a0e28e23"
+	},
+	"ok" : 1
+}
+> 
+> 
+*****************************************************************************************************************************
+
+							4. Text Index – `explain()`
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> db.products.find({
+...   $text: { $search: "laptop SSD" }
+... }).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "marketplaceDB.products",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"$text" : {
+				"$search" : "laptop SSD",
+				"$language" : "english",
+				"$caseSensitive" : false,
+				"$diacriticSensitive" : false
+			}
+		},
+		"winningPlan" : {
+			"stage" : "TEXT",
+			"indexPrefix" : {
+				
+			},
+			"indexName" : "name_text_description_text_category_text",
+			"parsedTextQuery" : {
+				"terms" : [
+					"laptop",
+					"ssd"
+				],
+				"negatedTerms" : [ ],
+				"phrases" : [ ],
+				"negatedPhrases" : [ ]
+			},
+			"textIndexVersion" : 3,
+			"inputStage" : {
+				"stage" : "TEXT_MATCH",
+				"inputStage" : {
+					"stage" : "FETCH",
+					"inputStage" : {
+						"stage" : "OR",
+						"inputStages" : [
+							{
+								"stage" : "IXSCAN",
+								"keyPattern" : {
+									"_fts" : "text",
+									"_ftsx" : 1
+								},
+								"indexName" : "name_text_description_text_category_text",
+								"isMultiKey" : true,
+								"isUnique" : false,
+								"isSparse" : false,
+								"isPartial" : false,
+								"indexVersion" : 2,
+								"direction" : "backward",
+								"indexBounds" : {
+									
+								}
+							},
+							{
+								"stage" : "IXSCAN",
+								"keyPattern" : {
+									"_fts" : "text",
+									"_ftsx" : 1
+								},
+								"indexName" : "name_text_description_text_category_text",
+								"isMultiKey" : true,
+								"isUnique" : false,
+								"isSparse" : false,
+								"isPartial" : false,
+								"indexVersion" : 2,
+								"direction" : "backward",
+								"indexBounds" : {
+									
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 1,
+		"executionTimeMillis" : 0,
+		"totalKeysExamined" : 2,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "TEXT",
+			"nReturned" : 1,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 4,
+			"advanced" : 1,
+			"needTime" : 2,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"indexPrefix" : {
+				
+			},
+			"indexName" : "name_text_description_text_category_text",
+			"parsedTextQuery" : {
+				"terms" : [
+					"laptop",
+					"ssd"
+				],
+				"negatedTerms" : [ ],
+				"phrases" : [ ],
+				"negatedPhrases" : [ ]
+			},
+			"textIndexVersion" : 3,
+			"inputStage" : {
+				"stage" : "TEXT_MATCH",
+				"nReturned" : 1,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 4,
+				"advanced" : 1,
+				"needTime" : 2,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"docsRejected" : 0,
+				"inputStage" : {
+					"stage" : "FETCH",
+					"nReturned" : 1,
+					"executionTimeMillisEstimate" : 0,
+					"works" : 4,
+					"advanced" : 1,
+					"needTime" : 2,
+					"needYield" : 0,
+					"saveState" : 0,
+					"restoreState" : 0,
+					"isEOF" : 1,
+					"docsExamined" : 1,
+					"alreadyHasObj" : 0,
+					"inputStage" : {
+						"stage" : "OR",
+						"nReturned" : 1,
+						"executionTimeMillisEstimate" : 0,
+						"works" : 4,
+						"advanced" : 1,
+						"needTime" : 2,
+						"needYield" : 0,
+						"saveState" : 0,
+						"restoreState" : 0,
+						"isEOF" : 1,
+						"dupsTested" : 2,
+						"dupsDropped" : 1,
+						"inputStages" : [
+							{
+								"stage" : "IXSCAN",
+								"nReturned" : 1,
+								"executionTimeMillisEstimate" : 0,
+								"works" : 2,
+								"advanced" : 1,
+								"needTime" : 0,
+								"needYield" : 0,
+								"saveState" : 0,
+								"restoreState" : 0,
+								"isEOF" : 1,
+								"keyPattern" : {
+									"_fts" : "text",
+									"_ftsx" : 1
+								},
+								"indexName" : "name_text_description_text_category_text",
+								"isMultiKey" : true,
+								"isUnique" : false,
+								"isSparse" : false,
+								"isPartial" : false,
+								"indexVersion" : 2,
+								"direction" : "backward",
+								"indexBounds" : {
+									
+								},
+								"keysExamined" : 1,
+								"seeks" : 1,
+								"dupsTested" : 1,
+								"dupsDropped" : 0
+							},
+							{
+								"stage" : "IXSCAN",
+								"nReturned" : 1,
+								"executionTimeMillisEstimate" : 0,
+								"works" : 2,
+								"advanced" : 1,
+								"needTime" : 0,
+								"needYield" : 0,
+								"saveState" : 0,
+								"restoreState" : 0,
+								"isEOF" : 1,
+								"keyPattern" : {
+									"_fts" : "text",
+									"_ftsx" : 1
+								},
+								"indexName" : "name_text_description_text_category_text",
+								"isMultiKey" : true,
+								"isUnique" : false,
+								"isSparse" : false,
+								"isPartial" : false,
+								"indexVersion" : 2,
+								"direction" : "backward",
+								"indexBounds" : {
+									
+								},
+								"keysExamined" : 1,
+								"seeks" : 1,
+								"dupsTested" : 1,
+								"dupsDropped" : 0
+							}
+						]
+					}
+				}
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "dbsl-21",
+		"port" : 27017,
+		"version" : "4.2.13",
+		"gitVersion" : "82dd40f60c55dae12426c08fd7150d79a0e28e23"
+	},
+	"ok" : 1
+}
+> 
+> 
+*****************************************************************************************************************************
+
+						5. Array (Multikey) Index – `explain()`
+
+*****************************************************************************************************************************
+> 
+> 
+> 
+> db.products.find({
+...   tags: "electronics"
+... }).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "marketplaceDB.products",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"tags" : {
+				"$eq" : "electronics"
+			}
+		},
+		"winningPlan" : {
+			"stage" : "FETCH",
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"keyPattern" : {
+					"tags" : 1
+				},
+				"indexName" : "tags_1",
+				"isMultiKey" : true,
+				"multiKeyPaths" : {
+					"tags" : [
+						"tags"
+					]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"tags" : [
+						"[\"electronics\", \"electronics\"]"
+					]
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 1,
+		"executionTimeMillis" : 0,
+		"totalKeysExamined" : 1,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "FETCH",
+			"nReturned" : 1,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 2,
+			"advanced" : 1,
+			"needTime" : 0,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"docsExamined" : 1,
+			"alreadyHasObj" : 0,
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"nReturned" : 1,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 2,
+				"advanced" : 1,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"keyPattern" : {
+					"tags" : 1
+				},
+				"indexName" : "tags_1",
+				"isMultiKey" : true,
+				"multiKeyPaths" : {
+					"tags" : [
+						"tags"
+					]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"tags" : [
+						"[\"electronics\", \"electronics\"]"
+					]
+				},
+				"keysExamined" : 1,
+				"seeks" : 1,
+				"dupsTested" : 1,
+				"dupsDropped" : 0
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "dbsl-21",
+		"port" : 27017,
+		"version" : "4.2.13",
+		"gitVersion" : "82dd40f60c55dae12426c08fd7150d79a0e28e23"
+	},
+	"ok" : 1
+}
+> 
+> 
+> 
+> 
+> 
+> 
+> db.orders.find({
+...   "items.product_id": 1
+... }).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "marketplaceDB.orders",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"items.product_id" : {
+				"$eq" : 1
+			}
+		},
+		"winningPlan" : {
+			"stage" : "FETCH",
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"keyPattern" : {
+					"items.product_id" : 1
+				},
+				"indexName" : "items.product_id_1",
+				"isMultiKey" : true,
+				"multiKeyPaths" : {
+					"items.product_id" : [
+						"items"
+					]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"items.product_id" : [
+						"[1.0, 1.0]"
+					]
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 1,
+		"executionTimeMillis" : 0,
+		"totalKeysExamined" : 1,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "FETCH",
+			"nReturned" : 1,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 2,
+			"advanced" : 1,
+			"needTime" : 0,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"docsExamined" : 1,
+			"alreadyHasObj" : 0,
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"nReturned" : 1,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 2,
+				"advanced" : 1,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"keyPattern" : {
+					"items.product_id" : 1
+				},
+				"indexName" : "items.product_id_1",
+				"isMultiKey" : true,
+				"multiKeyPaths" : {
+					"items.product_id" : [
+						"items"
+					]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"items.product_id" : [
+						"[1.0, 1.0]"
+					]
+				},
+				"keysExamined" : 1,
+				"seeks" : 1,
+				"dupsTested" : 1,
+				"dupsDropped" : 0
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "dbsl-21",
+		"port" : 27017,
+		"version" : "4.2.13",
+		"gitVersion" : "82dd40f60c55dae12426c08fd7150d79a0e28e23"
+	},
+	"ok" : 1
+}
+
+
+
+

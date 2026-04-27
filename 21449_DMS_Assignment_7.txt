@@ -1,0 +1,412 @@
+
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+
+		The University wants to analyze course enrollments, faculty performance and student
+		achievements using MongoDB aggregation pipelines. The university maintains a
+		“courses” collection, which includes:
+		i. Course details (title, department, credit hours, instructor)
+		ii. Student enrollments (student names, scores, pass/fail status)
+		iii. Faculty details (experience, designation, department) Design and
+		implement aggregation queries to generate various reports using
+		multiple aggregation stages with the given collection in MongoDB.
+
+
+*****************************************************************************************************************************
+
+
+		Queries for assignment 7: 
+
+		1. Count the number of students in each course 
+		2. Find the average student performance per course
+		3. Find the top 5 ranked students per department 
+		4. Find failed students per course 
+		5. Perform course-wise performance analysis 
+		6. Analyze experience-wise faculty course 
+		7. Analyze designation-wise faculty course performance 
+		8. Determine how many courses each student is enrolled in 
+		9. List department-wise courses 
+		10. Generate faculty statistics 
+		11. Provide course summary.
+					
+*****************************************************************************************************************************
+*****************************************************************************************************************************					
+
+*****************************************************************************************************************************
+							
+							Database creation
+							*****************************************************************************************************************************
+> 
+> 
+>							> 
+> 
+>
+> use university
+switched to db university
+> 
+> 
+> 
+*****************************************************************************************************************************
+							
+							Collection creation
+							*****************************************************************************************************************************
+> 
+> 
+> db.createCollection("courses")
+{ "ok" : 1 }
+> 
+> 
+> 
+*****************************************************************************************************************************
+							
+						Inserting data into collection 'courses'
+							*****************************************************************************************************************************
+> 
+> db.courses.insertMany([
+... {
+...   title: "DBMS",
+...   department: "Computer",
+...   credit_hours: 4,
+...   instructor: "Dr. Patil",
+...   faculty: {
+...     experience: 10,
+...     designation: "Professor",
+...     department: "Computer"
+...   },
+...   students: [
+...     { name: "Amit", score: 85, status: "Pass" },
+...     { name: "Riya", score: 40, status: "Fail" },
+...     { name: "Neha", score: 78, status: "Pass" }
+...   ]
+... },
+... {
+...   title: "OS",
+...   department: "Computer",
+...   credit_hours: 3,
+...   instructor: "Dr. Sharma",
+...   faculty: {
+...     experience: 7,
+...     designation: "Associate Professor",
+...     department: "Computer"
+...   },
+...   students: [
+...     { name: "Amit", score: 65, status: "Pass" },
+...     { name: "Raj", score: 30, status: "Fail" }
+...   ]
+... },
+... {
+...   title: "Maths",
+...   department: "Science",
+...   credit_hours: 4,
+...   instructor: "Dr. Rao",
+...   faculty: {
+...     experience: 12,
+...     designation: "Professor",
+...     department: "Science"
+...   },
+...   students: [
+...     { name: "Neha", score: 90, status: "Pass" },
+...     { name: "Riya", score: 50, status: "Pass" }
+...   ]
+... }
+... ])
+{
+	"acknowledged" : true,
+	"insertedIds" : [
+		ObjectId("69e0a1f09a1963d00d3c17d7"),
+		ObjectId("69e0a1f09a1963d00d3c17d8"),
+		ObjectId("69e0a1f09a1963d00d3c17d9")
+	]
+}
+> 
+> 
+> 
+> 							Aggregation Queries
+*****************************************************************************************************************************
+							
+					1. Count the number of students in each course 
+							*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> 
+> db.courses.aggregate([
+...   {
+...     $project: {
+...       title: 1,
+...       total_students: { $size: "$students" }
+...     }
+...   }
+... ])
+{ "_id" : ObjectId("69e0a1f09a1963d00d3c17d7"), "title" : "DBMS", "total_students" : 3 }
+{ "_id" : ObjectId("69e0a1f09a1963d00d3c17d8"), "title" : "OS", "total_students" : 2 }
+{ "_id" : ObjectId("69e0a1f09a1963d00d3c17d9"), "title" : "Maths", "total_students" : 2 }
+> 
+> 
+*****************************************************************************************************************************
+							
+					2. Average student performance per course
+							*****************************************************************************************************************************
+> 
+> 
+> db.courses.aggregate([{ $unwind: "$students" },
+...   {
+...     $group: {
+...       _id: "$title",
+...       avg_score: { $avg: "$students.score" }
+...     }
+...   }
+... ])
+{ "_id" : "Maths", "avg_score" : 70 }
+{ "_id" : "DBMS", "avg_score" : 67.66666666666667 }
+{ "_id" : "OS", "avg_score" : 47.5 }
+> 
+> 
+> 
+*****************************************************************************************************************************
+							
+						3. Top 5 students per department
+							*****************************************************************************************************************************
+> 
+> 
+> 
+> db.courses.aggregate([{ $unwind: "$students" },
+...   { $sort: { "students.score": -1 } },
+...   {
+...     $group: {
+...       _id: "$department",
+...       students: {
+...         $push: {
+...           name: "$students.name",
+...           score: "$students.score"
+...         }
+...       }
+...     }
+...   },
+...   {
+...     $project: {
+...       top_5: { $slice: ["$students", 5] }
+...     }
+...   }
+... ])
+{ "_id" : "Science", "top_5" : [ { "name" : "Neha", "score" : 90 }, { "name" : "Riya", "score" : 50 } ] }
+{ "_id" : "Computer", "top_5" : [ { "name" : "Amit", "score" : 85 }, { "name" : "Neha", "score" : 78 }, { "name" : "Amit", "score" : 65 }, { "name" : "Riya", "score" : 40 }, { "name" : "Raj", "score" : 30 } ] }
+> 
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+							
+						4. Failed students per course
+							*****************************************************************************************************************************
+> 
+> 
+> db.courses.aggregate([{ $unwind: "$students" },
+...   { $match: { "students.status": "Fail" } },
+...   {
+...     $group: {
+...       _id: "$title",
+...       failed_students: { $push: "$students.name" }
+...     }
+...   }
+... ])
+{ "_id" : "DBMS", "failed_students" : [ "Riya" ] }
+{ "_id" : "OS", "failed_students" : [ "Raj" ] }
+> 
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+							
+						5. Course-wise performance analysis
+							*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> db.courses.aggregate([{ $unwind: "$students" },
+...   {
+...     $group: {
+...       _id: "$title",
+...       avg: { $avg: "$students.score" },
+...       max: { $max: "$students.score" },
+...       min: { $min: "$students.score" }
+...     }
+...   }
+... ])
+{ "_id" : "DBMS", "avg" : 67.66666666666667, "max" : 85, "min" : 40 }
+{ "_id" : "OS", "avg" : 47.5, "max" : 65, "min" : 30 }
+{ "_id" : "Maths", "avg" : 70, "max" : 90, "min" : 50 }
+> 
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+							
+						6. Experience-wise faculty course analysis
+							*****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> db.courses.aggregate([
+...   {
+...     $group: {
+...       _id: "$faculty.experience",
+...       total_courses: { $sum: 1 }
+...     }
+...   }
+... ])
+{ "_id" : 12, "total_courses" : 1 }
+{ "_id" : 10, "total_courses" : 1 }
+{ "_id" : 7, "total_courses" : 1 }
+> 
+>  
+> 
+*****************************************************************************************************************************
+							
+						7. Designation-wise performance
+							*****************************************************************************************************************************
+> 
+>  
+>
+>
+> db.courses.aggregate([{ $unwind: "$students" },
+...   {
+...     $group: {
+...       _id: "$faculty.designation",
+...       avg_score: { $avg: "$students.score" }
+...     }
+...   }
+... ])
+{ "_id" : "Associate Professor", "avg_score" : 47.5 }
+{ "_id" : "Professor", "avg_score" : 68.6 }
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+							
+						8. Courses per student
+							*****************************************************************************************************************************
+> 
+> 
+> 
+> db.courses.aggregate([{ $unwind: "$students" },
+...   {
+...     $group: {
+...       _id: "$students.name",
+...       courses_enrolled: { $sum: 1 }
+...     }
+...   }
+... ])
+{ "_id" : "Amit", "courses_enrolled" : 2 }
+{ "_id" : "Riya", "courses_enrolled" : 2 }
+{ "_id" : "Raj", "courses_enrolled" : 1 }
+{ "_id" : "Neha", "courses_enrolled" : 2 }
+> 
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+							
+						9. Department-wise courses
+							****************************************************************************************************************************
+> 
+> 
+> 
+> 
+> db.courses.aggregate([
+...   {
+...     $group: {
+...       _id: "$department",
+...       courses: { $push: "$title" }
+...     }
+...   }
+... ])
+{ "_id" : "Science", "courses" : [ "Maths" ] }
+{ "_id" : "Computer", "courses" : [ "DBMS", "OS" ] }
+> 
+> 
+> 
+> 
+> 
+*****************************************************************************************************************************
+						
+						  10. Faculty statistics	
+							****************************************************************************************************************************							> 
+> 
+> 
+> db.courses.aggregate([
+...   {
+...     $group: {
+...       _id: "$faculty.designation",
+...       total_faculty: { $sum: 1 },
+...       avg_experience: { $avg: "$faculty.experience" }
+...     }
+...   }
+... ])
+{ "_id" : "Professor", "total_faculty" : 2, "avg_experience" : 11 }
+{ "_id" : "Associate Professor", "total_faculty" : 1, "avg_experience" : 7 }
+> 
+> 
+> 
+> 
+> 
+>					
+*****************************************************************************************************************************
+						
+						  11. Course summary
+							****************************************************************************************************************************d								
+> 
+> 
+> 
+> db.courses.aggregate([
+...   {
+...     $project: {
+...       title: 1,
+...       department: 1,
+...       instructor: 1,
+...       total_students: { $size: "$students" }
+...     }
+...   }
+... ])
+{ "_id" : ObjectId("69e0a1f09a1963d00d3c17d7"), "title" : "DBMS", "department" : "Computer", "instructor" : "Dr. Patil", "total_students" : 3 }
+{ "_id" : ObjectId("69e0a1f09a1963d00d3c17d8"), "title" : "OS", "department" : "Computer", "instructor" : "Dr. Sharma", "total_students" : 2 }
+{ "_id" : ObjectId("69e0a1f09a1963d00d3c17d9"), "title" : "Maths", "department" : "Science", "instructor" : "Dr. Rao", "total_students" : 2 }
+> 
+> 
+> 
+> 
+> 
+			
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+

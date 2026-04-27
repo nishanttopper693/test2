@@ -1,0 +1,52 @@
+Department(dept_id,dept_name, building, loc)
+student(stud_id,stud_name,email,phone,dob,dept_id);
+Course(course_id, course_name, dept_id, credits,instructor_id)
+Enrollment(enrollement_id, student_id, course_id, date_of_enrollement)
+Instructor(instructor_id, instructor_name, dept_id, salary)
+
+
+department(dept_id int primary key, dept_name varchar(10) not null , bulding varchar(20) , loc varchar(20) );
+
+student( stud_id varchar(10) primary key , stud_name varchar(20) not null , email varchar(30) ,  phone_no varchar(15) , dob date default(CURDATE()) , dept_id int not null , foreign key(dept_id) references department(dept_id) );
+
+course(course_id varchar(10) primary key , course_name varchar(20) not null , dept_id int not null , credits int  , instructor_id varchar(10) ,foreign key(dept_id) references department(dept_id) , foreign key(instructor_id) references instructor(instructor_id) );
+
+enrollment( enr_id varchar(10) primary key , stud_id varchar(10) , course_id varchar(10) , doe date default(CURDATE()) , foreign key(stud_id) references student(stud_id) , foreign key(course_id) references course(course_id) );
+
+instructor(instructor_id varchar(10) primary key , instructor_name varchar(20) , dept_id int , salary decimal(10,2) , foreign key(dept_id) references department(dept_id) );
+
+insert into department (dept_id, dept_name, bulding, loc) values(1, 'CSE', 'Block A', 'Mumbai'),(2, 'ECE', 'Block B', 'Pune'),(3, 'MECH', 'Block C', 'Delhi'),(4, 'CIVIL', 'Block D', 'Chennai');
+
+insert into instructor (instructor_id, instructor_name, dept_id, salary) values('I101', 'Dr Sharma', 1, 90000.00),('I102', 'Dr Mehta', 1, 85000.00),('I103', 'Dr Rao', 2, 80000.00),('I104', 'Dr Singh', 3, 95000.00),('I105', 'Dr Kumar', 4, 78000.00);
+
+insert into student (stud_id, stud_name, email, phone_no, dob, dept_id) values('S001', 'John', 'john@gmail.com', '9876543210', '2002-05-10', 1),('S002', 'Amit', 'amit@gmail.com', '9876543222', '2001-08-15', 1),('S003', 'Riya', 'riya@gmail.com', '9876543333', '2002-11-20', 2),('S004', 'Neha', 'neha@gmail.com', '9876543444', '2001-02-25', 3),('S005', 'Rahul', 'rahul@gmail.com', '9876543555', '2002-07-30', 4),('S006', 'Priya', 'priya@gmail.com', '9876543666', '2001-12-12', 2);
+
+
+insert into course (course_id, course_name, dept_id, credits, instructor_id) values('C101', 'DBMS', 1, 4, 'I101'),('C102', 'OS', 1, 4, 'I102'),('C103', 'CN', 1, 3, 'I101'),('C201', 'Digital', 2, 3, 'I103'),('C301', 'Thermo', 3, 5, 'I104'),('C401', 'Structures', 4, 4, 'I105');
+
+insert into enrollment (enr_id, stud_id, course_id, doe) values('E001', 'S001', 'C101', '2024-01-10'),('E002', 'S001', 'C102', '2024-01-12'),('E003', 'S002', 'C101', '2024-01-11'),('E004', 'S003', 'C201', '2024-01-15'),('E005', 'S004', 'C301', '2024-01-20'),('E006', 'S005', 'C401', '2024-01-22'),('E007', 'S006', 'C201', '2024-01-18');
+
+select s.stud_name, d.dept_name from student s join department d on s.dept_id = d.dept_id;
+
+select distinct s.stud_id, s.stud_name from student s join enrollment e on s.stud_id = e.stud_id;
+
+select c.course_id, c.course_name from course c left join enrollment e on c.course_id = e.course_id where e.course_id is null;
+
+select c.course_name, c.credits, i.instructor_name from course c join instructor i on c.instructor_id = i.instructor_id where c.credits > 3;
+
+select i.instructor_name, d.dept_name, i.salary from instructor i join department d on i.dept_id = d.dept_id order by i.salary desc;
+
+select s.stud_name from student s join enrollment e on s.stud_id = e.stud_id  join course c on e.course_id = c.course_id where c.course_name = 'dbms';
+
+select s.stud_id, s.stud_name from student s join enrollment e on s.stud_id = e.stud_id group by s.stud_id, s.stud_name having count(e.course_id) > 1;
+
+select i.instructor_id, i.instructor_name from instructor i join course c on i.instructor_id = c.instructor_id group by i.instructor_id, i.instructor_name
+having count(c.course_id) > 1;
+
+select distinct s2.stud_name from student s1 join enrollment e1 on s1.stud_id = e1.stud_id join enrollment e2 on e1.course_id = e2.course_id join student s2 on e2.stud_id = s2.stud_id where s1.stud_name = 'john' and s2.stud_name != 'john';
+
+select instructor_name, salary from instructor where salary = (select max(salary) from instructor);
+
+create view instructor_courses as select i.instructor_name, c.course_name  from instructor i join course c on i.instructor_id = c.instructor_id;
+
+select * from instructor_courses;

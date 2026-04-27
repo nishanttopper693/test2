@@ -1,0 +1,376 @@
+﻿Microsoft Windows [Version 10.0.19045.6466]
+(c) Microsoft Corporation. All rights reserved.
+
+
+C:\Users\harshwardhan patil>cd "C:\Program Files\MySQL\MySQL Server 8.0\bin"
+
+
+C:\Program Files\MySQL\MySQL Server 8.0\bin>mysql -u root -p
+Enter password: ********
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 13
+Server version: 8.0.45 MySQL Community Server - GPL
+
+
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
+
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+
+mysql> use se21362_db;
+Database changed
+mysql> CREATE TABLE customer (
+    ->     cust_id        int primary key,
+    ->     cust_name      varchar(50) not null,
+    ->     cust_phoneno   varchar(15) not null unique,
+    ->     cust_emailid   varchar(100) unique,
+    ->     cust_city      varchar(50) not null,
+    ->     cust_created   date default (curdate())
+    -> );
+Query OK, 0 rows affected (11.30 sec)
+
+
+mysql>
+mysql> CREATE TABLE Product (
+    ->     product_id       INT PRIMARY KEY,
+    ->     product_name     VARCHAR(100),
+    ->     product_category VARCHAR(50) ,
+    ->     product_price    DECIMAL(10,2) CHECK (product_price > 0)
+    -> );
+Query OK, 0 rows affected (1.61 sec)
+
+
+mysql> CREATE TABLE Orders (
+    ->     order_id     INT PRIMARY KEY,
+    ->     customer_id  INT NOT NULL,
+    ->     product_id   INT NOT NULL,
+    ->     order_date   DATE DEFAULT (CURRENT_DATE()),
+    ->     quantity     INT NOT NULL check (quantity >0),
+    ->     amount       DECIMAL(10,2) NOT NULL,
+    ->      FOREIGN KEY (customer_id)  REFERENCES Customer(cust_id)  ON DELETE CASCADE,
+    ->       FOREIGN KEY (product_id) REFERENCES Product(product_id)  ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (2.95 sec)
+
+
+mysql> INSERT INTO customer
+    -> (cust_id, cust_name, cust_phoneno, cust_emailid, cust_city, cust_created)
+    -> VALUES
+    -> (1, 'Arjun Kulkarni', 9123456780, 'arjun@gmail.com', 'Pune', CURDATE()),
+    -> (2, 'Kunal Deshpande', 9234567810, 'kunal@gmail.com', 'Mumbai', CURDATE()),
+    -> (3, 'Pooja Nair', 9345678123, 'pooja@gmail.com', 'Thane', CURDATE()),
+    -> (4, 'Saurabh More', 9456781234, 'saurabh@gmail.com', 'Nashik', CURDATE()),
+    -> (5, 'Anjali Patil', 9567812345, 'anjali@gmail.com', 'Kolhapur', CURDATE()),
+    -> (6, 'Rakesh Yadav', 9678123456, 'rakesh@gmail.com', 'Nagpur', CURDATE()),
+    -> (7, 'Meenal Joshi', 9781234567, 'meenal@gmail.com', 'Aurangabad', CURDATE()),
+    -> (8, 'Vikas Chavan', 9892345678, 'vikas@gmail.com', 'Solapur', CURDATE()),
+    -> (9, 'Nikita Shah', 9012345678, 'nikita@gmail.com', 'Ahmednagar', CURDATE()),
+    -> (10, 'Aditya Malhotra', 9123987654, 'aditya@gmail.com', 'Navi Mumbai', CURDATE());
+Query OK, 10 rows affected (1.50 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+
+mysql> INSERT INTO product
+    -> (product_id, product_name, product_category, product_price)
+    -> VALUES
+    -> (201, 'Laptop Pro', 'Electronics', 89999.00),
+    -> (202, 'Headphones', 'Electronics', 4500.00),
+    -> (203, 'Office Desk', 'Furniture', 17200.00),
+    -> (204, 'Smart Band', 'Electronics', 3999.00),
+    -> (205, 'Bookshelf', 'Furniture', 10800.00),
+    -> (206, 'T-Shirts', 'Cloth', 3200.00),
+    -> (207, 'Jeans', 'Cloth', 7000.00),
+    -> (208, 'LED Lamp', 'Electronics', 1800.00),
+    -> (209, 'AC', 'Electronics', 32500.00),
+    -> (210, 'Bed', 'Furniture', 24000.00);
+Query OK, 10 rows affected (0.50 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+
+mysql> INSERT INTO orders
+    -> (order_id, customer_id, product_id, order_date, quantity, amount)
+    -> VALUES
+    -> (11, 1, 201, CURDATE(), 1, 89999.00),
+    -> (12, 2, 202, CURDATE(), 2, 9000.00),
+    -> (13, 3, 203, CURDATE(), 1, 17200.00),
+    -> (14, 4, 204, CURDATE(), 1, 3999.00),
+    -> (15, 5, 205, CURDATE(), 1, 10800.00),
+    -> (16, 6, 206, CURDATE(), 3, 9600.00),
+    -> (17, 7, 207, CURDATE(), 2, 14000.00),
+    -> (18, 8, 208, CURDATE(), 2, 3600.00),
+    -> (19, 9, 209, CURDATE(), 1, 32500.00),
+    -> (20, 10, 210, CURDATE(), 1, 24000.00);
+Query OK, 10 rows affected (0.59 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+
+mysql> select * from customer;
++---------+-----------------+--------------+-------------------+-------------+--------------+
+| cust_id | cust_name       | cust_phoneno | cust_emailid      | cust_city   | cust_created |
++---------+-----------------+--------------+-------------------+-------------+--------------+
+|       1 | Arjun Kulkarni  | 9123456780   | arjun@gmail.com   | Pune        | 2026-01-27   |
+|       2 | Kunal Deshpande | 9234567810   | kunal@gmail.com   | Mumbai      | 2026-01-27   |
+|       3 | Pooja Nair      | 9345678123   | pooja@gmail.com   | Thane       | 2026-01-27   |
+|       4 | Saurabh More    | 9456781234   | saurabh@gmail.com | Nashik      | 2026-01-27   |
+|       5 | Anjali Patil    | 9567812345   | anjali@gmail.com  | Kolhapur    | 2026-01-27   |
+|       6 | Rakesh Yadav    | 9678123456   | rakesh@gmail.com  | Nagpur      | 2026-01-27   |
+|       7 | Meenal Joshi    | 9781234567   | meenal@gmail.com  | Aurangabad  | 2026-01-27   |
+|       8 | Vikas Chavan    | 9892345678   | vikas@gmail.com   | Solapur     | 2026-01-27   |
+|       9 | Nikita Shah     | 9012345678   | nikita@gmail.com  | Ahmednagar  | 2026-01-27   |
+|      10 | Aditya Malhotra | 9123987654   | aditya@gmail.com  | Navi Mumbai | 2026-01-27   |
++---------+-----------------+--------------+-------------------+-------------+--------------+
+10 rows in set (0.15 sec)
+
+
+mysql> select * from Product;
++------------+--------------+------------------+---------------+
+| product_id | product_name | product_category | product_price |
++------------+--------------+------------------+---------------+
+|        201 | Laptop Pro   | Electronics      |      89999.00 |
+|        202 | Headphones   | Electronics      |       4500.00 |
+|        203 | Office Desk  | Furniture        |      17200.00 |
+|        204 | Smart Band   | Electronics      |       3999.00 |
+|        205 | Bookshelf    | Furniture        |      10800.00 |
+|        206 | T-Shirts     | Cloth            |       3200.00 |
+|        207 | Jeans        | Cloth            |       7000.00 |
+|        208 | LED Lamp     | Electronics      |       1800.00 |
+|        209 | AC           | Electronics      |      32500.00 |
+|        210 | Bed          | Furniture        |      24000.00 |
++------------+--------------+------------------+---------------+
+10 rows in set (0.03 sec)
+
+
+mysql> select * from Orders;
++----------+-------------+------------+------------+----------+----------+
+| order_id | customer_id | product_id | order_date | quantity | amount   |
++----------+-------------+------------+------------+----------+----------+
+|       11 |           1 |        201 | 2026-01-27 |        1 | 89999.00 |
+|       12 |           2 |        202 | 2026-01-27 |        2 |  9000.00 |
+|       13 |           3 |        203 | 2026-01-27 |        1 | 17200.00 |
+|       14 |           4 |        204 | 2026-01-27 |        1 |  3999.00 |
+|       15 |           5 |        205 | 2026-01-27 |        1 | 10800.00 |
+|       16 |           6 |        206 | 2026-01-27 |        3 |  9600.00 |
+|       17 |           7 |        207 | 2026-01-27 |        2 | 14000.00 |
+|       18 |           8 |        208 | 2026-01-27 |        2 |  3600.00 |
+|       19 |           9 |        209 | 2026-01-27 |        1 | 32500.00 |
+|       20 |          10 |        210 | 2026-01-27 |        1 | 24000.00 |
++----------+-------------+------------+------------+----------+----------+
+10 rows in set (0.00 sec)
+
+
+mysql> SELECT customer_id,SUM(amount) AS total_spent FROM orders GROUP BY customer_id HAVING total_spent > 10000;
++-------------+-------------+
+| customer_id | total_spent |
++-------------+-------------+
+|           1 |    89999.00 |
+|           3 |    17200.00 |
+|           5 |    10800.00 |
+|           7 |    14000.00 |
+|           9 |    32500.00 |
+|          10 |    24000.00 |
++-------------+-------------+
+6 rows in set (0.23 sec)
+
+
+mysql> SELECT customer_id,SUM(amount) AS total_spent FROM orders GROUP BY customer_id;
++-------------+-------------+
+| customer_id | total_spent |
++-------------+-------------+
+|           1 |    89999.00 |
+|           2 |     9000.00 |
+|           3 |    17200.00 |
+|           4 |     3999.00 |
+|           5 |    10800.00 |
+|           6 |     9600.00 |
+|           7 |    14000.00 |
+|           8 |     3600.00 |
+|           9 |    32500.00 |
+|          10 |    24000.00 |
++-------------+-------------+
+10 rows in set (0.00 sec)
+
+
+mysql> SELECT product_name,product_price,  CASE WHEN product_price < 10000 THEN 'cheap' WHEN product_price < 40000 THEN 'moderate' WHEN product_price >40000 THEN 'expensive' END AS price_category  FROM product;
++--------------+---------------+----------------+
+| product_name | product_price | price_category |
++--------------+---------------+----------------+
+| Laptop Pro   |      89999.00 | expensive      |
+| Headphones   |       4500.00 | cheap          |
+| Office Desk  |      17200.00 | moderate       |
+| Smart Band   |       3999.00 | cheap          |
+| Bookshelf    |      10800.00 | moderate       |
+| T-Shirts     |       3200.00 | cheap          |
+| Jeans        |       7000.00 | cheap          |
+| LED Lamp     |       1800.00 | cheap          |
+| AC           |      32500.00 | moderate       |
+| Bed          |      24000.00 | moderate       |
++--------------+---------------+----------------+
+10 rows in set (0.03 sec)
+
+
+mysql> SELECT c.cust_name,SUM(o.amount) AS total_spent FROM orders o JOIN customer c ON o.customer_id = c.cust_id GROUP BY c.cust_id,c.cust_name HAVING total_spent > 10000;
++-----------------+-------------+
+| cust_name       | total_spent |
++-----------------+-------------+
+| Arjun Kulkarni  |    89999.00 |
+| Pooja Nair      |    17200.00 |
+| Anjali Patil    |    10800.00 |
+| Meenal Joshi    |    14000.00 |
+| Nikita Shah     |    32500.00 |
+| Aditya Malhotra |    24000.00 |
++-----------------+-------------+
+6 rows in set (0.22 sec)
+
+
+mysql> CREATE TABLE cust_dup AS SELECT * FROM customer;
+Query OK, 10 rows affected (3.38 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+
+mysql> SELECT * FROM cust_dup;
++---------+-----------------+--------------+-------------------+-------------+--------------+
+| cust_id | cust_name       | cust_phoneno | cust_emailid      | cust_city   | cust_created |
++---------+-----------------+--------------+-------------------+-------------+--------------+
+|       1 | Arjun Kulkarni  | 9123456780   | arjun@gmail.com   | Pune        | 2026-01-27   |
+|       2 | Kunal Deshpande | 9234567810   | kunal@gmail.com   | Mumbai      | 2026-01-27   |
+|       3 | Pooja Nair      | 9345678123   | pooja@gmail.com   | Thane       | 2026-01-27   |
+|       4 | Saurabh More    | 9456781234   | saurabh@gmail.com | Nashik      | 2026-01-27   |
+|       5 | Anjali Patil    | 9567812345   | anjali@gmail.com  | Kolhapur    | 2026-01-27   |
+|       6 | Rakesh Yadav    | 9678123456   | rakesh@gmail.com  | Nagpur      | 2026-01-27   |
+|       7 | Meenal Joshi    | 9781234567   | meenal@gmail.com  | Aurangabad  | 2026-01-27   |
+|       8 | Vikas Chavan    | 9892345678   | vikas@gmail.com   | Solapur     | 2026-01-27   |
+|       9 | Nikita Shah     | 9012345678   | nikita@gmail.com  | Ahmednagar  | 2026-01-27   |
+|      10 | Aditya Malhotra | 9123987654   | aditya@gmail.com  | Navi Mumbai | 2026-01-27   |
++---------+-----------------+--------------+-------------------+-------------+--------------+
+10 rows in set (0.00 sec)
+
+
+mysql>  DELETE FROM cust_dup;
+Query OK, 10 rows affected (0.40 sec)
+
+
+mysql> SELECT * FROM cust_dup;
+Empty set (0.00 sec)
+
+
+mysql> SHOW TABLES;
++----------------------+
+| Tables_in_se21362_db |
++----------------------+
+| cust_dup             |
+| customer             |
+| orders               |
+| product              |
++----------------------+
+4 rows in set (2.93 sec)
+
+
+mysql> DROP TABLE cust_dup;
+Query OK, 0 rows affected (2.70 sec)
+
+
+mysql> SHOW TABLES;
++----------------------+
+| Tables_in_se21362_db |
++----------------------+
+| customer             |
+| orders               |
+| product              |
++----------------------+
+3 rows in set (0.00 sec)
+
+
+mysql> CREATE TABLE order_dup AS SELECT * FROM orders;
+Query OK, 10 rows affected (5.88 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+
+mysql> SELECT * FROM order_dup;
++----------+-------------+------------+------------+----------+----------+
+| order_id | customer_id | product_id | order_date | quantity | amount   |
++----------+-------------+------------+------------+----------+----------+
+|       11 |           1 |        201 | 2026-01-27 |        1 | 89999.00 |
+|       12 |           2 |        202 | 2026-01-27 |        2 |  9000.00 |
+|       13 |           3 |        203 | 2026-01-27 |        1 | 17200.00 |
+|       14 |           4 |        204 | 2026-01-27 |        1 |  3999.00 |
+|       15 |           5 |        205 | 2026-01-27 |        1 | 10800.00 |
+|       16 |           6 |        206 | 2026-01-27 |        3 |  9600.00 |
+|       17 |           7 |        207 | 2026-01-27 |        2 | 14000.00 |
+|       18 |           8 |        208 | 2026-01-27 |        2 |  3600.00 |
+|       19 |           9 |        209 | 2026-01-27 |        1 | 32500.00 |
+|       20 |          10 |        210 | 2026-01-27 |        1 | 24000.00 |
++----------+-------------+------------+------------+----------+----------+
+10 rows in set (0.00 sec)
+
+
+mysql> TRUNCATE order_dup;
+Query OK, 0 rows affected (2.95 sec)
+
+
+mysql> SHOW TABLES;
++----------------------+
+| Tables_in_se21362_db |
++----------------------+
+| customer             |
+| order_dup            |
+| orders               |
+| product              |
++----------------------+
+4 rows in set (0.00 sec)
+
+
+mysql> UPDATE product SET product_price = product_price * 1.1;
+Query OK, 10 rows affected (0.54 sec)
+Rows matched: 10  Changed: 10  Warnings: 0
+
+
+mysql> SELECT * FROM product;
++------------+--------------+------------------+---------------+
+| product_id | product_name | product_category | product_price |
++------------+--------------+------------------+---------------+
+|        201 | Laptop Pro   | Electronics      |      98998.90 |
+|        202 | Headphones   | Electronics      |       4950.00 |
+|        203 | Office Desk  | Furniture        |      18920.00 |
+|        204 | Smart Band   | Electronics      |       4398.90 |
+|        205 | Bookshelf    | Furniture        |      11880.00 |
+|        206 | T-Shirts     | Cloth            |       3520.00 |
+|        207 | Jeans        | Cloth            |       7700.00 |
+|        208 | LED Lamp     | Electronics      |       1980.00 |
+|        209 | AC           | Electronics      |      35750.00 |
+|        210 | Bed          | Furniture        |      26400.00 |
++------------+--------------+------------------+---------------+
+10 rows in set (0.00 sec)
+
+
+mysql>  SELECT * FROM product WHERE product_category LIKE 'E%' OR 'C%';
++------------+--------------+------------------+---------------+
+| product_id | product_name | product_category | product_price |
++------------+--------------+------------------+---------------+
+|        201 | Laptop Pro   | Electronics      |      98998.90 |
+|        202 | Headphones   | Electronics      |       4950.00 |
+|        204 | Smart Band   | Electronics      |       4398.90 |
+|        208 | LED Lamp     | Electronics      |       1980.00 |
+|        209 | AC           | Electronics      |      35750.00 |
++------------+--------------+------------------+---------------+
+5 rows in set, 1 warning (0.20 sec)
+
+
+mysql> SHOW TABLES;
++----------------------+
+| Tables_in_se21362_db |
++----------------------+
+| customer             |
+| order_dup            |
+| orders               |
+| product              |
++----------------------+
+4 rows in set (0.00 sec)
+
+
+mysql>

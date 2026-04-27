@@ -1,0 +1,680 @@
+************************************************************************************************
+
+	Implement various MYSQL Databse Operations using Java Programming Language
+	
+************************************************************************************************
+
+************************************************************************************************
+
+					Before running java code
+	
+************************************************************************************************
+
+[SE@dbsl-05 ~]$ mysql -h 10.10.8.119 -u dms21449 -p
+Enter password: 
+ERROR 1045 (28000): Access denied for user 'dms21449'@'10.10.11.187' (using password: YES)
+[SE@dbsl-05 ~]$ mysql -h 10.10.8.119 -u se21449 -p
+Enter password: 
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 583
+Server version: 10.4.19-MariaDB MariaDB Server
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> use se21449_db;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+MariaDB [se21449_db]> create table emp (
+    -> empno int primary key,
+    -> ename varchar(50),
+    -> salary int,
+    -> deptno int,
+    -> manager_id int
+    -> );
+Query OK, 0 rows affected (0.147 sec)
+
+MariaDB [se21449_db]> insert into emp values (1, 'amit', 50000, 10, 101);
+Query OK, 1 row affected (0.045 sec)
+
+MariaDB [se21449_db]> insert into emp values (2, 'neha', 60000, 20, 102);
+Query OK, 1 row affected (0.025 sec)
+
+MariaDB [se21449_db]> insert into emp values (3, 'rahul', 55000, 10, 101);
+Query OK, 1 row affected (0.049 sec)
+
+MariaDB [se21449_db]> insert into emp values (4, 'priya', 70000, 30, 103);
+Query OK, 1 row affected (0.058 sec)
+
+MariaDB [se21449_db]> insert into emp values (5, 'sneha', 48000, 20, 102);
+Query OK, 1 row affected (0.033 sec)
+
+MariaDB [se21449_db]> insert into emp values (6, 'arjun', 65000, 30, 103);
+Query OK, 1 row affected (0.033 sec)
+
+MariaDB [se21449_db]> insert into emp values (7, 'kavita', 52000, 10, 101);
+Query OK, 1 row affected (0.033 sec)
+
+MariaDB [se21449_db]> insert into emp values (8, 'rohan', 58000, 20, 102);
+Query OK, 1 row affected (0.033 sec)
+
+MariaDB [se21449_db]> insert into emp values (9, 'divya', 72000, 30, 103);
+Query OK, 1 row affected (0.033 sec)
+
+MariaDB [se21449_db]> insert into emp values (10, 'vikas', 61000, 10, 101);
+Query OK, 1 row affected (0.053 sec)
+
+MariaDB [se21449_db]> select * from emp;
++-------+--------+--------+--------+------------+
+| empno | ename  | salary | deptno | manager_id |
++-------+--------+--------+--------+------------+
+|     1 | amit   |  50000 |     10 |        101 |
+|     2 | neha   |  60000 |     20 |        102 |
+|     3 | rahul  |  55000 |     10 |        101 |
+|     4 | priya  |  70000 |     30 |        103 |
+|     5 | sneha  |  48000 |     20 |        102 |
+|     6 | arjun  |  65000 |     30 |        103 |
+|     7 | kavita |  52000 |     10 |        101 |
+|     8 | rohan  |  58000 |     20 |        102 |
+|     9 | divya  |  72000 |     30 |        103 |
+|    10 | vikas  |  61000 |     10 |        101 |
++-------+--------+--------+--------+------------+
+10 rows in set (0.001 sec)
+
+MariaDB [se21449_db]> select * from emp where deptno = 10;
++-------+--------+--------+--------+------------+
+| empno | ename  | salary | deptno | manager_id |
++-------+--------+--------+--------+------------+
+|     1 | amit   |  50000 |     10 |        101 |
+|     3 | rahul  |  55000 |     10 |        101 |
+|     7 | kavita |  52000 |     10 |        101 |
+|    10 | vikas  |  61000 |     10 |        101 |
++-------+--------+--------+--------+------------+
+4 rows in set (0.001 sec)
+
+MariaDB [se21449_db]> select * from emp order by salary desc limit 1;
++-------+-------+--------+--------+------------+
+| empno | ename | salary | deptno | manager_id |
++-------+-------+--------+--------+------------+
+|     9 | divya |  72000 |     30 |        103 |
++-------+-------+--------+--------+------------+
+1 row in set (0.001 sec)
+
+MariaDB [se21449_db]> update emp set salary = 75000 where empno = 2;
+Query OK, 1 row affected (0.040 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [se21449_db]> select * from emp;
++-------+--------+--------+--------+------------+
+| empno | ename  | salary | deptno | manager_id |
++-------+--------+--------+--------+------------+
+|     1 | amit   |  50000 |     10 |        101 |
+|     2 | neha   |  75000 |     20 |        102 |
+|     3 | rahul  |  55000 |     10 |        101 |
+|     4 | priya  |  70000 |     30 |        103 |
+|     5 | sneha  |  48000 |     20 |        102 |
+|     6 | arjun  |  65000 |     30 |        103 |
+|     7 | kavita |  52000 |     10 |        101 |
+|     8 | rohan  |  58000 |     20 |        102 |
+|     9 | divya  |  72000 |     30 |        103 |
+|    10 | vikas  |  61000 |     10 |        101 |
++-------+--------+--------+--------+------------+
+10 rows in set (0.001 sec)
+
+MariaDB [se21449_db]> delete from emp where empno = 10;
+Query OK, 1 row affected (0.041 sec)
+
+MariaDB [se21449_db]> select * from emp;
++-------+--------+--------+--------+------------+
+| empno | ename  | salary | deptno | manager_id |
++-------+--------+--------+--------+------------+
+|     1 | amit   |  50000 |     10 |        101 |
+|     2 | neha   |  75000 |     20 |        102 |
+|     3 | rahul  |  55000 |     10 |        101 |
+|     4 | priya  |  70000 |     30 |        103 |
+|     5 | sneha  |  48000 |     20 |        102 |
+|     6 | arjun  |  65000 |     30 |        103 |
+|     7 | kavita |  52000 |     10 |        101 |
+|     8 | rohan  |  58000 |     20 |        102 |
+|     9 | divya  |  72000 |     30 |        103 |
++-------+--------+--------+--------+------------+
+9 rows in set (0.001 sec)
+
+************************************************************************************************
+
+					Java code
+	
+************************************************************************************************
+
+
+package com.pict.dms;
+
+import java.sql.*;
+import java.util.*;
+
+public class EmployeeDMS {
+
+    static Connection connection;
+    static Scanner sc = new Scanner(System.in);
+
+    public static void main(String[] args) {
+    	
+        try {
+            
+
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://10.10.8.119:3306/se21449_db",
+                    "se21449",
+                    "se21449"
+            );
+
+            int choice;
+
+            do {
+                System.out.println("\n===== SMART EMPLOYEE DBMS =====");
+                System.out.println("1. View All Employees");
+                System.out.println("2. Insert Employee");
+                System.out.println("3. Update Employee");
+                System.out.println("4. Delete Employee");
+                System.out.println("5. Search / Filter System");
+                System.out.println("6. Analytics Dashboard");
+                System.out.println("7. Batch Insert Demo");
+                System.out.println("8. Exit");
+
+                System.out.print("Enter choice: ");
+                choice = sc.nextInt();
+
+                switch (choice) {
+
+                    case 1:
+                        viewAll();
+                        break;
+
+                    case 2:
+                        insertEmployee();
+                        break;
+
+                    case 3:
+                        updateEmployee();
+                        break;
+
+                    case 4:
+                        deleteEmployee();
+                        break;
+
+                    case 5:
+                        searchMenu();
+                        break;
+
+                    case 6:
+                        analytics();
+                        break;
+
+                    case 7:
+                        batchInsertDemo();
+                        break;
+
+                    case 8:
+                        System.out.println("Exiting system...");
+                        break;
+
+                    default:
+                        System.out.println("Invalid choice!");
+                }
+
+            } while (choice != 8);
+
+            connection.close();
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+    }
+
+    // ---------------- SEARCH + FILTER ----------------
+    static void searchMenu() throws Exception {
+
+        System.out.println("\n1. Search by ID");
+        System.out.println("2. Search by Department");
+        System.out.println("3. Salary Range Filter");
+
+        int ch = sc.nextInt();
+
+        switch (ch) {
+
+            case 1:
+                System.out.print("Enter ID: ");
+                int id = sc.nextInt();
+
+                PreparedStatement ps1 = connection.prepareStatement(
+                        "SELECT * FROM emp WHERE empno=?"
+                );
+                ps1.setInt(1, id);
+
+                ResultSet rs1 = ps1.executeQuery();
+                print(rs1);
+                break;
+
+            case 2:
+                System.out.print("Enter Dept: ");
+                int dept = sc.nextInt();
+
+                PreparedStatement ps2 = connection.prepareStatement(
+                        "SELECT * FROM emp WHERE deptno=?"
+                );
+                ps2.setInt(1, dept);
+
+                ResultSet rs2 = ps2.executeQuery();
+                print(rs2);
+                break;
+
+            case 3:
+                System.out.print("Min Salary: ");
+                int min = sc.nextInt();
+
+                System.out.print("Max Salary: ");
+                int max = sc.nextInt();
+
+                PreparedStatement ps3 = connection.prepareStatement(
+                        "SELECT * FROM emp WHERE salary BETWEEN ? AND ?"
+                );
+
+                ps3.setInt(1, min);
+                ps3.setInt(2, max);
+
+                ResultSet rs3 = ps3.executeQuery();
+                print(rs3);
+                break;
+
+            default:
+                System.out.println("Invalid choice!");
+        }
+    }
+
+    // ---------------- OTHER METHODS SAME ----------------
+
+    static void viewAll() throws Exception {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM emp");
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            System.out.println(
+                    rs.getInt("empno") + " | " +
+                    rs.getString("ename") + " | " +
+                    rs.getInt("salary") + " | Dept: " +
+                    rs.getInt("deptno")
+            );
+        }
+    }
+
+    static void insertEmployee() throws Exception {
+        System.out.print("Enter ID: ");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Enter Name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter Salary: ");
+        int salary = sc.nextInt();
+
+        System.out.print("Enter Dept No: ");
+        int dept = sc.nextInt();
+
+        PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO emp VALUES (?, ?, ?, ?, 101)"
+        );
+
+        ps.setInt(1, id);
+        ps.setString(2, name);
+        ps.setInt(3, salary);
+        ps.setInt(4, dept);
+
+        ps.executeUpdate();
+
+        System.out.println("Employee inserted successfully");
+    }
+
+    static void updateEmployee() throws Exception {
+        System.out.print("Enter Employee ID: ");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("New Name: ");
+        String name = sc.nextLine();
+
+        PreparedStatement ps = connection.prepareStatement(
+                "UPDATE emp SET ename=? WHERE empno=?"
+        );
+
+        ps.setString(1, name);
+        ps.setInt(2, id);
+
+        ps.executeUpdate();
+
+        System.out.println("Employee updated");
+    }
+
+    static void deleteEmployee() throws Exception {
+        System.out.print("Enter Employee ID: ");
+        int id = sc.nextInt();
+
+        PreparedStatement ps = connection.prepareStatement(
+                "DELETE FROM emp WHERE empno=?"
+        );
+
+        ps.setInt(1, id);
+        ps.executeUpdate();
+
+        System.out.println("Employee deleted");
+    }
+
+    static void analytics() throws Exception {
+        Statement st = connection.createStatement();
+
+        ResultSet rs1 = st.executeQuery("SELECT MAX(salary) FROM emp");
+        rs1.next();
+        System.out.println("Max Salary: " + rs1.getInt(1));
+
+        ResultSet rs2 = st.executeQuery("SELECT MIN(salary) FROM emp");
+        rs2.next();
+        System.out.println("Min Salary: " + rs2.getInt(1));
+
+        ResultSet rs3 = st.executeQuery("SELECT AVG(salary) FROM emp");
+        rs3.next();
+        System.out.println("Avg Salary: " + rs3.getInt(1));
+    }
+
+    static void batchInsertDemo() throws Exception {
+        PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO emp VALUES (?, ?, ?, ?, 101)"
+        );
+
+        for (int i = 0; i < 3; i++) {
+            System.out.print("ID: ");
+            ps.setInt(1, sc.nextInt());
+            sc.nextLine();
+
+            System.out.print("Name: ");
+            ps.setString(2, sc.nextLine());
+
+            System.out.print("Salary: ");
+            ps.setInt(3, sc.nextInt());
+
+            System.out.print("Dept: ");
+            ps.setInt(4, sc.nextInt());
+
+            ps.addBatch();
+        }
+
+        ps.executeBatch();
+        System.out.println("Batch insert completed");
+    }
+
+    static void print(ResultSet rs) throws Exception {
+        while (rs.next()) {
+            System.out.println(
+                    rs.getInt("empno") + " | " +
+                    rs.getString("ename") + " | " +
+                    rs.getInt("salary")
+            );
+        }
+    }
+}
+
+************************************************************************************************
+
+			After running java code(Console Output)
+	
+************************************************************************************************
+
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 1
+1 | amit | 50000 | Dept: 10
+2 | neha | 75000 | Dept: 20
+3 | rahul | 55000 | Dept: 10
+4 | priya | 70000 | Dept: 30
+5 | sneha | 48000 | Dept: 20
+6 | arjun | 65000 | Dept: 30
+7 | kavita | 52000 | Dept: 10
+8 | rohan | 58000 | Dept: 20
+9 | divya | 72000 | Dept: 30
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 2
+Enter ID: 10
+Enter Name: radha
+Enter Salary: 72000
+Enter Dept No: 30
+Employee inserted successfully
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 1
+1 | amit | 50000 | Dept: 10
+2 | neha | 75000 | Dept: 20
+3 | rahul | 55000 | Dept: 10
+4 | priya | 70000 | Dept: 30
+5 | sneha | 48000 | Dept: 20
+6 | arjun | 65000 | Dept: 30
+7 | kavita | 52000 | Dept: 10
+8 | rohan | 58000 | Dept: 20
+9 | divya | 72000 | Dept: 30
+10 | radha | 72000 | Dept: 30
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 3
+Enter Employee ID: 10
+New Name: rahul
+Employee updated
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 1
+1 | amit | 50000 | Dept: 10
+2 | neha | 75000 | Dept: 20
+3 | rahul | 55000 | Dept: 10
+4 | priya | 70000 | Dept: 30
+5 | sneha | 48000 | Dept: 20
+6 | arjun | 65000 | Dept: 30
+7 | kavita | 52000 | Dept: 10
+8 | rohan | 58000 | Dept: 20
+9 | divya | 72000 | Dept: 30
+10 | rahul | 72000 | Dept: 30
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 4
+Enter Employee ID: 10
+Employee deleted
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 5
+
+1. Search by ID
+2. Search by Department
+3. Salary Range Filter
+1
+Enter ID: 3
+3 | rahul | 55000
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 5
+
+1. Search by ID
+2. Search by Department
+3. Salary Range Filter
+2
+Enter Dept: 30
+4 | priya | 70000
+6 | arjun | 65000
+9 | divya | 72000
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 5
+
+1. Search by ID
+2. Search by Department
+3. Salary Range Filter
+3
+Min Salary: 45000
+Max Salary: 100000
+1 | amit | 50000
+2 | neha | 75000
+3 | rahul | 55000
+4 | priya | 70000
+5 | sneha | 48000
+6 | arjun | 65000
+7 | kavita | 52000
+8 | rohan | 58000
+9 | divya | 72000
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 6
+Max Salary: 75000
+Min Salary: 48000
+Avg Salary: 60555
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 7
+ID: 11
+Name: John
+Salary: 59000
+Dept: 10
+ID: 12
+Name: Vedant
+Salary: 99000
+Dept: 20
+ID: 13
+Name: Nishil
+Salary: 99500
+Dept: 10
+Batch insert completed
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 1
+1 | amit | 50000 | Dept: 10
+2 | neha | 75000 | Dept: 20
+3 | rahul | 55000 | Dept: 10
+4 | priya | 70000 | Dept: 30
+5 | sneha | 48000 | Dept: 20
+6 | arjun | 65000 | Dept: 30
+7 | kavita | 52000 | Dept: 10
+8 | rohan | 58000 | Dept: 20
+9 | divya | 72000 | Dept: 30
+11 | John | 59000 | Dept: 10
+12 | Vedant | 99000 | Dept: 20
+13 | Nishil | 99500 | Dept: 10
+
+===== SMART EMPLOYEE DBMS =====
+1. View All Employees
+2. Insert Employee
+3. Update Employee
+4. Delete Employee
+5. Search / Filter System
+6. Analytics Dashboard
+7. Batch Insert Demo
+8. Exit
+Enter choice: 8
+Exiting system...
+
+
+
+
