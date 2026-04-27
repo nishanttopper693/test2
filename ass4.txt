@@ -1,0 +1,122 @@
+Enter password: ********
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 12
+Server version: 8.0.45 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use se21362_db;
+Database changed
+mysql> CREATE TABLE EMPLOYEE (    Emp_Id INT PRIMARY KEY,    First_Name VARCHAR(50),    Last_Name VARCHAR(50),    Email VARCHAR(100),    Phone_No VARCHAR(15),    Hire_Date DATE,    Job_Profile VARCHAR(50),    Salary DECIMAL(10,2),    HRA DECIMAL(10,2));
+Query OK, 0 rows affected (0.19 sec)
+
+mysql> CREATE TABLE COMPANY_INFO (    Emp_Count INT DEFAULT 0,    Total_Salary_Expenses DECIMAL(15,2) DEFAULT 0);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE EMP_LOG (    Emp_Id INT,    Old_Salary DECIMAL(10,2),    New_Salary DECIMAL(10,2),    Edit_Time DATETIME,    Job_Status VARCHAR(20));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> INSERT INTO COMPANY_INFO VALUES (0,0);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER before_emp_insert
+    -> BEFORE INSERT ON EMPLOYEE
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     -- Set HRA = 20% of Salary
+    ->     SET NEW.HRA = NEW.Salary * 0.20;
+    -> END$$
+Query OK, 0 rows affected (0.04 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER before_emp_update
+    -> BEFORE UPDATE ON EMPLOYEE
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     SET NEW.HRA = NEW.Salary * 0.20;
+    -> END$$
+Query OK, 0 rows affected (0.14 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER after_emp_insert
+    -> AFTER INSERT ON EMPLOYEE
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     UPDATE COMPANY_INFO
+    ->     SET Emp_Count = Emp_Count + 1,
+    ->         Total_Salary_Expenses = Total_Salary_Expenses + NEW.Salary;
+    -> END$$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER after_emp_update
+    -> AFTER UPDATE ON EMPLOYEE
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     -- Update total salary expenses
+    ->     UPDATE COMPANY_INFO
+    ->     SET Total_Salary_Expenses = Total_Salary_Expenses
+    ->                                - OLD.Salary + NEW.Salary;
+    ->
+    ->     -- Log change
+    ->     INSERT INTO EMP_LOG
+    ->     VALUES (NEW.Emp_Id, OLD.Salary, NEW.Salary, NOW(), 'UPDATED');
+    -> END$$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER after_emp_delete
+    -> AFTER DELETE ON EMPLOYEE
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     UPDATE COMPANY_INFO
+    ->     SET Emp_Count = Emp_Count - 1,
+    ->         Total_Salary_Expenses = Total_Salary_Expenses - OLD.Salary;
+    ->
+    ->     INSERT INTO EMP_LOG
+    ->     VALUES (OLD.Emp_Id, OLD.Salary, NULL, NOW(), 'DELETED');
+    -> END$$
+Query OK, 0 rows affected (0.03 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> -- Insert employee
+mysql> INSERT INTO EMPLOYEE
+    -> VALUES (1,'Amit','Sharma','a@gmail.com','9876543210','2024-01-01','Manager',50000,NULL);
+Query OK, 1 row affected (0.02 sec)
+
+mysql>
+mysql> -- Update salary
+mysql> UPDATE EMPLOYEE
+    -> SET Salary = 60000
+    -> WHERE Emp_Id = 1;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql>
+mysql> -- Delete employee
+mysql> DELETE FROM EMPLOYEE
+    -> WHERE Emp_Id = 1;
+Query OK, 1 row affected (0.01 sec)
+
+mysql>

@@ -1,0 +1,275 @@
+Enter password: ********
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 11
+Server version: 8.0.45 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use se21362_db;
+Database changed
+mysql> CREATE TABLE Department (    dept_name VARCHAR(50) PRIMARY KEY,    building VARCHAR(50) NOT NULL,    budget DECIMAL(10,2) CHECK (budget > 0));
+Query OK, 0 rows affected (0.19 sec)
+
+mysql> CREATE TABLE Course (    course_id INT PRIMARY KEY,    title VARCHAR(100) NOT NULL,    dept_name VARCHAR(50),    credits INT CHECK (credits > 0),    FOREIGN KEY (dept_name)         REFERENCES Department(dept_name)        ON DELETE CASCADE);
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> CREATE TABLE Enrollment (    student_id INT,    student_name VARCHAR(100),    course_id INT,    PRIMARY KEY (student_id, course_id),    FOREIGN KEY (course_id)         REFERENCES Course(course_id)        ON DELETE CASCADE);
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> CREATE TABLE Instructor (    ID INT PRIMARY KEY,    name VARCHAR(100),    dept_name VARCHAR(50),    salary DECIMAL(10,2),    FOREIGN KEY (dept_name)         REFERENCES Department(dept_name)        ON DELETE CASCADE);
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> INSERT INTO Department VALUES
+    -> ('CS','Block A',500000),
+    -> ('IT','Block B',450000),
+    -> ('ECE','Block C',400000),
+    -> ('ME','Block D',350000),
+    -> ('CE','Block E',300000);
+Query OK, 5 rows affected (0.04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Course VALUES
+    -> (101,'DBMS','CS',4),
+    -> (102,'DSA','CS',3),
+    -> (103,'Networks','IT',4),
+    -> (104,'OS','IT',3),
+    -> (105,'Circuits','ECE',4),
+    -> (106,'Microprocessors','ECE',3),
+    -> (107,'Thermodynamics','ME',3),
+    -> (108,'Surveying','CE',4),
+    -> (109,'Structural','CE',4),
+    -> (110,'AI','CS',4);
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Enrollment VALUES
+    -> (1,'Amit',101),
+    -> (2,'Neha',102),
+    -> (3,'Rahul',103),
+    -> (4,'Sneha',104),
+    -> (5,'Karan',105),
+    -> (6,'Riya',106),
+    -> (7,'Arjun',107),
+    -> (8,'Pooja',108),
+    -> (9,'Vikram',109),
+    -> (10,'John',101);
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Instructor VALUES
+    -> (1,'Dr A','CS',80000),
+    -> (2,'Dr B','IT',75000),
+    -> (3,'Dr C','ECE',70000),
+    -> (4,'Dr D','ME',65000),
+    -> (5,'Dr E','CE',72000),
+    -> (6,'Dr F','CS',85000),
+    -> (7,'Dr G','IT',78000),
+    -> (8,'Dr H','ECE',72000),
+    -> (9,'Dr I','ME',69000),
+    -> (10,'Dr J','CE',71000);
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Instructor VALUES
+    -> (1,'Dr A','CS',80000),
+    -> (2,'Dr B','IT',75000),
+    -> (3,'Dr C','ECE',70000),
+    -> (4,'Dr D','ME',65000),
+    -> (5,'Dr E','CE',72000),
+    -> (6,'Dr F','CS',85000),
+    -> (7,'Dr G','IT',78000),
+    -> (8,'Dr H','ECE',72000),
+    -> (9,'Dr I','ME',69000),
+    -> (10,'Dr J','CE',71^C
+mysql> SELECT e.student_name, c.title
+    -> FROM Enrollment e
+    -> JOIN Course c ON e.course_id = c.course_id;
++--------------+-----------------+
+| student_name | title           |
++--------------+-----------------+
+| Amit         | DBMS            |
+| Neha         | DSA             |
+| Rahul        | Networks        |
+| Sneha        | OS              |
+| Karan        | Circuits        |
+| Riya         | Microprocessors |
+| Arjun        | Thermodynamics  |
+| Pooja        | Surveying       |
+| Vikram       | Structural      |
+| John         | DBMS            |
++--------------+-----------------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT i.name, d.building
+    -> FROM Instructor i
+    -> JOIN Department d ON i.dept_name = d.dept_name;
++------+----------+
+| name | building |
++------+----------+
+| Dr E | Block E  |
+| Dr J | Block E  |
+| Dr A | Block A  |
+| Dr F | Block A  |
+| Dr C | Block C  |
+| Dr H | Block C  |
+| Dr B | Block B  |
+| Dr G | Block B  |
+| Dr D | Block D  |
+| Dr I | Block D  |
++------+----------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT i.name, c.title
+    -> FROM Instructor i
+    -> JOIN Course c ON i.dept_name = c.dept_name;
++------+-----------------+
+| name | title           |
++------+-----------------+
+| Dr A | DBMS            |
+| Dr A | DSA             |
+| Dr A | AI              |
+| Dr B | Networks        |
+| Dr B | OS              |
+| Dr C | Circuits        |
+| Dr C | Microprocessors |
+| Dr D | Thermodynamics  |
+| Dr E | Surveying       |
+| Dr E | Structural      |
+| Dr F | DBMS            |
+| Dr F | DSA             |
+| Dr F | AI              |
+| Dr G | Networks        |
+| Dr G | OS              |
+| Dr H | Circuits        |
+| Dr H | Microprocessors |
+| Dr I | Thermodynamics  |
+| Dr J | Surveying       |
+| Dr J | Structural      |
++------+-----------------+
+20 rows in set (0.00 sec)
+
+mysql> SELECT e.student_name
+    -> FROM Enrollment e
+    -> JOIN Course c ON e.course_id = c.course_id
+    -> WHERE c.dept_name = 'IT';
++--------------+
+| student_name |
++--------------+
+| Rahul        |
+| Sneha        |
++--------------+
+2 rows in set (0.01 sec)
+
+mysql> SELECT name, dept_name, salary
+    -> FROM Instructor
+    -> ORDER BY salary DESC;
++------+-----------+----------+
+| name | dept_name | salary   |
++------+-----------+----------+
+| Dr F | CS        | 85000.00 |
+| Dr A | CS        | 80000.00 |
+| Dr G | IT        | 78000.00 |
+| Dr B | IT        | 75000.00 |
+| Dr E | CE        | 72000.00 |
+| Dr H | ECE       | 72000.00 |
+| Dr J | CE        | 71000.00 |
+| Dr C | ECE       | 70000.00 |
+| Dr I | ME        | 69000.00 |
+| Dr D | ME        | 65000.00 |
++------+-----------+----------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT dept_name
+    -> FROM Course
+    -> GROUP BY dept_name
+    -> HAVING COUNT(*) > 1;
++-----------+
+| dept_name |
++-----------+
+| CE        |
+| CS        |
+| ECE       |
+| IT        |
++-----------+
+4 rows in set (0.04 sec)
+
+mysql> SELECT title
+    -> FROM Course
+    -> WHERE dept_name = (
+    ->     SELECT dept_name
+    ->     FROM Department
+    ->     WHERE dept_name = 'CE'
+    -> );
++------------+
+| title      |
++------------+
+| Surveying  |
+| Structural |
++------------+
+2 rows in set (0.01 sec)
+
+mysql> SELECT title
+    -> FROM Course
+    -> WHERE credits = (SELECT MAX(credits) FROM Course);
++------------+
+| title      |
++------------+
+| DBMS       |
+| Networks   |
+| Circuits   |
+| Surveying  |
+| Structural |
+| AI         |
++------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT student_name
+    -> FROM Enrollment
+    -> WHERE course_id = (
+    ->     SELECT course_id
+    ->     FROM Enrollment
+    ->     WHERE student_name = 'John'
+    -> );
++--------------+
+| student_name |
++--------------+
+| Amit         |
+| John         |
++--------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT name
+    -> FROM Instructor
+    -> WHERE salary = (SELECT MAX(salary) FROM Instructor);
++------+
+| name |
++------+
+| Dr F |
++------+
+1 row in set (0.00 sec)
+
+mysql> SELECT dept_name
+    -> FROM Department
+    -> WHERE dept_name IN (
+    ->     SELECT dept_name
+    ->     FROM Course
+    ->     GROUP BY dept_name
+    ->     HAVING COUNT(*) > 1
+    -> );
++-----------+
+| dept_name |
++-----------+
+| CE        |
+| CS        |
+| ECE       |
+| IT        |
++-----------+
+4 rows in set (0.02 sec)
+
+mysql>

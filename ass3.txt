@@ -1,0 +1,203 @@
+Microsoft Windows [Version 10.0.19045.6466]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\harshwardhan patil>cd C:\Program Files\MySQL\MySQL Server 8.0\bin
+
+C:\Program Files\MySQL\MySQL Server 8.0\bin>mysql -u root -p
+Enter password: ********
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 8.0.45 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use se21362_db;
+Database changed
+mysql> show tables;
++----------------------+
+| Tables_in_se21362_db |
++----------------------+
+| course               |
+| customer             |
+| department           |
+| enrollment           |
+| instructor           |
+| instructor_courses   |
+| order_dup            |
+| orders               |
+| product              |
+| student              |
++----------------------+
+10 rows in set (1.02 sec)
+
+mysql> create table bank_customer (
+    ->     cust_name varchar(50) primary key,
+    ->     balance int,
+    ->     city varchar(20)
+    -> );
+Query OK, 0 rows affected (3.81 sec)
+
+mysql> create table loan (
+    ->     loan_no int primary key,
+    ->     branch_name varchar(50),
+    ->     amount int
+    -> );
+Query OK, 0 rows affected (2.98 sec)
+
+mysql> create table borrower (
+    ->     cust_name varchar(50) primary key,
+    ->     loan_no int,
+    ->     credit_score int,
+    ->     foreign key (cust_name) references bank_customer(cust_name),
+    ->     foreign key (loan_no) references loan(loan_no)
+    -> );
+Query OK, 0 rows affected (3.12 sec)
+
+mysql> insert into bank_customer (cust_name, balance, city) values
+    -> ('rahul', 300000, 'pune'),
+    -> ('priya', 450000, 'mumbai'),
+    -> ('amit', 250000, 'nagpur'),
+    -> ('neha', 500000, 'nashik'),
+    -> ('rohit', 350000, 'aurangabad'),
+    -> ('sneha', 400000, 'kolhapur'),
+    -> ('vikas', 280000, 'satara'),
+    -> ('ananya', 600000, 'thane');
+Query OK, 8 rows affected (0.61 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> insert into loan (loan_no, branch_name, amount) values
+    -> (101, 'pune', 50000),
+    -> (102, 'mumbai', 90000),
+    -> (103, 'nagpur', 120000),
+    -> (104, 'nashik', 200000),
+    -> (105, 'aurangabad', 70000),
+    -> (106, 'thane', 150000),
+    -> (107, 'kolhapur', 60000),
+    -> (108, 'satara', 180000);
+Query OK, 8 rows affected (0.26 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> insert into borrower (cust_name, loan_no) values
+    -> ('rahul', 101),
+    -> ('priya', 102),
+    -> ('amit', 103),
+    -> ('neha', 104),
+    -> ('rohit', 105),
+    -> ('sneha', 107),
+    -> ('vikas', 108),
+    -> ('ananya', 106);
+Query OK, 8 rows affected (0.47 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> delimiter #
+mysql> create function score(amount int, balance int)
+    -> returns int
+    -> deterministic
+    -> begin
+    ->     declare sum int;
+    ->
+    ->     set sum = (amount * 100) / balance;
+    ->
+    ->     if sum <= 20 then
+    ->         return 5;
+    ->     elseif sum <= 40 then
+    ->         return 4;
+    ->     elseif sum <= 60 then
+    ->         return 3;
+    ->     elseif sum <= 80 then
+    ->         return 2;
+    ->     elseif sum <= 100 then
+    ->         return 1;
+    ->     else
+    ->         return 0;
+    ->     end if;
+    ->
+    -> end #
+ERROR 1304 (42000): FUNCTION score already exists
+mysql> delimiter ;
+mysql> drop procedure cal_score_cursor;
+Query OK, 0 rows affected (1.17 sec)
+
+mysql> delimiter #
+mysql> create procedure cal_score_cursor()
+    -> begin
+    ->     declare bal int;
+    ->     declare loanAmount int;
+    ->     declare name varchar(50);
+    ->     declare level int;
+    ->     declare done int default 0;
+    ->
+    ->     declare cur cursor for
+    ->         select c.cust_name, c.balance, l.amount
+    ->         from bank_customer c
+    ->         join borrower b on c.cust_name = b.cust_name
+    ->         join loan l on b.loan_no = l.loan_no;
+    ->
+    ->     declare continue handler for not found
+    ->     begin
+    ->         set done = 1;
+    ->     end;
+    ->
+    ->     open cur;
+    ->
+    ->     read_loop: loop
+    ->         fetch cur into name, bal, loanAmount;
+    ->
+    ->         if done = 1 then
+    ->             leave read_loop;
+    ->         end if;
+    ->
+    ->         set level = score(loanAmount, bal);
+    ->
+    ->         update borrower
+    ->         set credit_score = level
+    ->         where cust_name = name;
+    ->
+    ->     end loop read_loop;
+    ->
+    ->     close cur;
+    ->
+    -> end #
+Query OK, 0 rows affected (0.44 sec)
+
+mysql> delimiter ;
+mysql> select * from borrower;
++-----------+---------+--------------+
+| cust_name | loan_no | credit_score |
++-----------+---------+--------------+
+| amit      |     103 |         NULL |
+| ananya    |     106 |         NULL |
+| neha      |     104 |         NULL |
+| priya     |     102 |         NULL |
+| rahul     |     101 |         NULL |
+| rohit     |     105 |         NULL |
+| sneha     |     107 |         NULL |
+| vikas     |     108 |         NULL |
++-----------+---------+--------------+
+8 rows in set (0.00 sec)
+
+mysql> call cal_score_cursor;
+Query OK, 0 rows affected (2.06 sec)
+
+mysql> select * from borrower;
++-----------+---------+--------------+
+| cust_name | loan_no | credit_score |
++-----------+---------+--------------+
+| amit      |     103 |            3 |
+| ananya    |     106 |            4 |
+| neha      |     104 |            4 |
+| priya     |     102 |            5 |
+| rahul     |     101 |            5 |
+| rohit     |     105 |            5 |
+| sneha     |     107 |            5 |
+| vikas     |     108 |            2 |
++-----------+---------+--------------+
+8 rows in set (0.00 sec)
+
+mysql>

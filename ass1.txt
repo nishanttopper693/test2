@@ -1,0 +1,259 @@
+Enter password: ********
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 9
+Server version: 8.0.45 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use se21362_db;
+Database changed
+mysql> CREATE TABLE Customer (
+    ->     cust_id INT PRIMARY KEY,
+    ->     cust_name VARCHAR(100) NOT NULL,
+    ->     cust_phoneNo VARCHAR(15) UNIQUE NOT NULL,
+    ->     cust_emailID VARCHAR(100) UNIQUE,
+    ->     cust_city VARCHAR(50) DEFAULT 'Pune',
+    ->     cust_created_date DATE DEFAULT (CURRENT_DATE)
+    -> );
+Query OK, 0 rows affected (0.22 sec)
+
+mysql> CREATE TABLE Product (
+    ->     product_id INT PRIMARY KEY,
+    ->     product_name VARCHAR(100) NOT NULL,
+    ->     product_category VARCHAR(50),
+    ->     product_price DECIMAL(10,2) CHECK (product_price > 0)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> CREATE TABLE Orders (
+    ->     order_id INT PRIMARY KEY,
+    ->     customer_id INT,
+    ->     product_id INT,
+    ->     order_date DATE DEFAULT (CURRENT_DATE),
+    ->     quantity INT CHECK (quantity > 0),
+    ->     amount DECIMAL(10,2),
+    ->
+    ->     FOREIGN KEY (customer_id)
+    ->         REFERENCES Customer(cust_id)
+    ->         ON DELETE CASCADE,
+    ->
+    ->     FOREIGN KEY (product_id)
+    ->         REFERENCES Product(product_id)
+    ->         ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> ALTER TABLE Customer
+    -> ADD cust_status VARCHAR(20) DEFAULT 'Active';
+Query OK, 0 rows affected (0.20 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE Product
+    -> MODIFY product_category VARCHAR(100);
+Query OK, 0 rows affected (0.10 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE Orders
+    -> ADD CONSTRAINT chk_amount CHECK (amount >= 0);
+Query OK, 0 rows affected (0.34 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE Customer
+    -> DROP COLUMN cust_status;
+Query OK, 0 rows affected (0.09 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE Orders
+    -> CHANGE quantity order_quantity INT;
+ERROR 3959 (HY000): Check constraint 'orders_chk_1' uses column 'quantity', hence column cannot be dropped or renamed.
+mysql> INSERT INTO Customer VALUES
+    -> (1,'Amit Sharma','9876543210','amit@gmail.com','Pune',CURDATE()),
+    -> (2,'Neha Patil','9123456780','neha@gmail.com','Mumbai',CURDATE()),
+    -> (3,'Rahul Verma','9988776655','rahul@gmail.com','Nagpur',CURDATE()),
+    -> (4,'Sneha Joshi','9090909090','sneha@gmail.com','Pune',CURDATE()),
+    -> (5,'Karan Mehta','8888888888','karan@gmail.com','Delhi',CURDATE()),
+    -> (6,'Riya Shah','7777777777','riya@gmail.com','Surat',CURDATE()),
+    -> (7,'Arjun Singh','9666666666','arjun@gmail.com','Jaipur',CURDATE()),
+    -> (8,'Pooja Kulkarni','9555555555','pooja@gmail.com','Pune',CURDATE()),
+    -> (9,'Vikram Rao','9444444444','vikram@gmail.com','Hyderabad',CURDATE()),
+    -> (10,'Anjali Desai','9333333333','anjali@gmail.com','Ahmedabad',CURDATE());
+Query OK, 10 rows affected (0.04 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Product VALUES
+    -> (101,'Laptop','Electronics',55000),
+    -> (102,'Mobile','Electronics',20000),
+    -> (103,'Headphones','Electronics',1500),
+    -> (104,'Pen','Stationary',20),
+    -> (105,'Notebook','Stationary',100),
+    -> (106,'Shirt','Cloth',1200),
+    -> (107,'Jeans','Cloth',2500),
+    -> (108,'Table','Furniture',7000),
+    -> (109,'Chair','Furniture',3000),
+    -> (110,'Speaker','Electronics',4000);
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Orders VALUES
+    -> (1001,1,101,'2024-01-10',1,55000),
+    -> (1002,2,102,'2024-02-15',2,40000),
+    -> (1003,3,103,'2023-05-20',3,4500),
+    -> (1004,4,104,'2022-06-10',5,100),
+    -> (1005,5,106,'2021-07-25',2,2400),
+    -> (1006,6,107,'2019-03-15',1,2500),
+    -> (1007,7,110,'2024-03-10',2,8000),
+    -> (1008,8,108,'2023-08-12',1,7000),
+    -> (1009,9,109,'2022-09-18',2,6000),
+    -> (1010,10,105,'2024-04-01',10,1000);
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> SELECT DISTINCT product_category FROM Product;
++------------------+
+| product_category |
++------------------+
+| Electronics      |
+| Stationary       |
+| Cloth            |
+| Furniture        |
++------------------+
+4 rows in set (0.01 sec)
+
+mysql> SELECT * FROM Product
+    -> WHERE product_category IN ('Electronics','Stationary','Cloth');
++------------+--------------+------------------+---------------+
+| product_id | product_name | product_category | product_price |
++------------+--------------+------------------+---------------+
+|        101 | Laptop       | Electronics      |      55000.00 |
+|        102 | Mobile       | Electronics      |      20000.00 |
+|        103 | Headphones   | Electronics      |       1500.00 |
+|        104 | Pen          | Stationary       |         20.00 |
+|        105 | Notebook     | Stationary       |        100.00 |
+|        106 | Shirt        | Cloth            |       1200.00 |
+|        107 | Jeans        | Cloth            |       2500.00 |
+|        110 | Speaker      | Electronics      |       4000.00 |
++------------+--------------+------------------+---------------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT * FROM Product
+    -> WHERE product_category='Electronics'
+    -> AND product_price BETWEEN 1000 AND 5000;
++------------+--------------+------------------+---------------+
+| product_id | product_name | product_category | product_price |
++------------+--------------+------------------+---------------+
+|        103 | Headphones   | Electronics      |       1500.00 |
+|        110 | Speaker      | Electronics      |       4000.00 |
++------------+--------------+------------------+---------------+
+2 rows in set (0.01 sec)
+
+mysql> SELECT * FROM Customer
+    -> WHERE cust_id NOT IN (SELECT customer_id FROM Orders);
+Empty set (0.01 sec)
+
+mysql> SELECT o.*
+    -> FROM Orders o
+    -> JOIN Product p ON o.product_id = p.product_id
+    -> WHERE p.product_name LIKE 'E%' OR p.product_name LIKE 'C%';
++----------+-------------+------------+------------+----------+---------+
+| order_id | customer_id | product_id | order_date | quantity | amount  |
++----------+-------------+------------+------------+----------+---------+
+|     1009 |           9 |        109 | 2022-09-18 |        2 | 6000.00 |
++----------+-------------+------------+------------+----------+---------+
+1 row in set (0.00 sec)
+
+mysql> SELECT product_name, product_price
+    -> FROM Product
+    -> ORDER BY product_price DESC
+    -> LIMIT 5;
++--------------+---------------+
+| product_name | product_price |
++--------------+---------------+
+| Laptop       |      55000.00 |
+| Mobile       |      20000.00 |
+| Table        |       7000.00 |
+| Speaker      |       4000.00 |
+| Chair        |       3000.00 |
++--------------+---------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT customer_id, SUM(amount) AS total_spent
+    -> FROM Orders
+    -> GROUP BY customer_id;
++-------------+-------------+
+| customer_id | total_spent |
++-------------+-------------+
+|           1 |    55000.00 |
+|           2 |    40000.00 |
+|           3 |     4500.00 |
+|           4 |      100.00 |
+|           5 |     2400.00 |
+|           6 |     2500.00 |
+|           7 |     8000.00 |
+|           8 |     7000.00 |
+|           9 |     6000.00 |
+|          10 |     1000.00 |
++-------------+-------------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT customer_id, SUM(amount) AS total_spent
+    -> FROM Orders
+    -> GROUP BY customer_id
+    -> HAVING SUM(amount) > 10000;
++-------------+-------------+
+| customer_id | total_spent |
++-------------+-------------+
+|           1 |    55000.00 |
+|           2 |    40000.00 |
++-------------+-------------+
+2 rows in set (0.01 sec)
+
+mysql> SELECT product_name, product_price,
+    -> CASE
+    ->     WHEN product_price < 200 THEN 'Cheap'
+    ->     WHEN product_price BETWEEN 200 AND 1000 THEN 'Moderate'
+    ->     ELSE 'Expensive'
+    -> END AS price_category
+    -> FROM Product;
++--------------+---------------+----------------+
+| product_name | product_price | price_category |
++--------------+---------------+----------------+
+| Laptop       |      55000.00 | Expensive      |
+| Mobile       |      20000.00 | Expensive      |
+| Headphones   |       1500.00 | Expensive      |
+| Pen          |         20.00 | Cheap          |
+| Notebook     |        100.00 | Cheap          |
+| Shirt        |       1200.00 | Expensive      |
+| Jeans        |       2500.00 | Expensive      |
+| Table        |       7000.00 | Expensive      |
+| Chair        |       3000.00 | Expensive      |
+| Speaker      |       4000.00 | Expensive      |
++--------------+---------------+----------------+
+10 rows in set (0.00 sec)
+
+mysql> UPDATE Product
+    -> SET product_price = product_price * 1.10
+    -> WHERE product_category = 'Electronics';
+Query OK, 4 rows affected (0.01 sec)
+Rows matched: 4  Changed: 4  Warnings: 0
+
+mysql> DELETE FROM Orders
+    -> WHERE order_date < '2020-01-01';
+Query OK, 1 row affected (0.01 sec)
+
+mysql> DELETE FROM Customer
+    -> WHERE cust_id NOT IN (SELECT customer_id FROM Orders);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> TRUNCATE TABLE Orders;
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> DROP TABLE Orders;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql>
