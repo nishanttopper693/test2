@@ -1,0 +1,89 @@
+^Cpict@pict-OptiPlex-5070:~/Desktop/21144/ass8/java$ javac -cp .:mysql-connector-j-9.0.0.jar StudentDB.java
+pict@pict-OptiPlex-5070:~/Desktop/21144/ass8/java$ java -cp .:mysql-connector-j-9.0.0.jar StudentDB
+Connected to MySQL Database!
+
+===== MENU =====
+1. Add Student
+2. Delete Student
+3. Edit Student
+4. Display Students
+5. Exit
+Enter your choice: 1
+Enter Name: Gauresh
+Enter Age: 40
+Enter Marks: 100
+1 Student Added Successfully.
+
+===== MENU =====
+1. Add Student
+2. Delete Student
+3. Edit Student
+4. Display Students
+5. Exit
+Enter your choice: 1
+Enter Name: Apoorv
+Enter Age: 50
+Enter Marks: 70
+1 Student Added Successfully.
+
+===== MENU =====
+1. Add Student
+2. Delete Student
+3. Edit Student
+4. Display Students
+5. Exit
+Enter your choice: 1
+Enter Name: Parth
+Enter Age: 20
+Enter Marks: 80
+1 Student Added Successfully.
+
+===== MENU =====
+1. Add Student
+2. Delete Student
+3. Edit Student
+4. Display Students
+5. Exit
+Enter your choice: 5
+Exiting...
+pict@pict-OptiPlex-5070:~/Desktop/21144/ass8/java$ javac -cp .:mysql-connector-j-9.0.0.jar StudentDB.java
+^[[Apict@pict-OptiPlex-5070:~/Desktop/21144/ass8/java$ java -cp .:mysql-connector-j-9.0.0.jar StudentDB
+Connected to MySQL Database!
+
+===== MENU =====
+1. Add Student
+2. Delete Student
+3. Edit Student
+4. Display Students
+5. Exit
+Enter your choice: 3
+Enter Student ID to Update: 3
+What do you want to update?
+1. Name
+2. Age
+3. Marks
+Enter Choice: 3
+Enter New Marks: 90
+1 Student Updated Successfully.
+
+===== MENU =====
+1. Add Student
+2. Delete Student
+3. Edit Student
+4. Display Students
+5. Exit
+Enter your choice: 4
+
+----- STUDENT RECORDS -----
+ID: 1 | Name: Gauresh | Age: 40 | Marks: 100.0
+ID: 2 | Name: Apoorv | Age: 50 | Marks: 70.0
+ID: 3 | Name: Parth | Age: 20 | Marks: 90.0
+
+===== MENU =====
+1. Add Student
+2. Delete Student
+3. Edit Student
+4. Display Students
+5. Exit
+Enter your choice: 
+

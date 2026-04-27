@@ -1,0 +1,436 @@
+db.products.insertMany([
+  {
+    name: "Wireless Headphones",
+    sku: "W-HD-100",
+    category: "Electronics",
+    price: 99.99,
+    tags: ["bluetooth", "audio", "tech"],
+    description: "Noise-cancelling over-ear headphones with 20h battery life."
+  },
+  {
+    name: "Ergonomic Desk Chair",
+    sku: "CH-ERG-05",
+    category: "Furniture",
+    price: 249.50,
+    tags: ["office", "home", "comfort"],
+    description: "High-back mesh chair with lumbar support."
+  }
+]);
+
+
+db.products.insertMany([
+  {
+    name: "Ultra-Slim Laptop Pro",
+    sku: "LP-US-2026",
+    category: "Electronics",
+    price: 1299.00,
+    tags: ["portable", "work", "high-performance", "aluminum"],
+    description: "A 14-inch laptop with the latest M3-equivalent chip and 18-hour battery."
+  },
+  {
+    name: "Organic Cotton T-Shirt",
+    sku: "AP-TS-ORG",
+    category: "Apparel",
+    price: 25.00,
+    tags: ["sustainable", "fashion", "basics", "soft"],
+    description: "Eco-friendly crew neck t-shirt made from 100% certified organic cotton."
+  },
+  {
+    name: "Smart Coffee Grinder",
+    sku: "KT-CG-500",
+    category: "Kitchen",
+    price: 85.50,
+    tags: ["coffee", "smart-home", "grind-size", "precision"],
+    description: "App-controlled burr grinder with 40 precise grind settings."
+  },
+  {
+    name: "Mechanical Gaming Keyboard",
+    sku: "LP-KB-RGB",
+    category: "Electronics",
+    price: 110.00,
+    tags: ["gaming", "rgb", "mechanical", "clicky"],
+    description: "Full-sized keyboard with hot-swappable switches and customizable lighting."
+  },
+  {
+    name: "Durable Yoga Mat",
+    sku: "SP-YM-PRO",
+    category: "Fitness",
+    price: 45.00,
+    tags: ["yoga", "exercise", "grip", "eco-friendly"],
+    description: "Non-slip 6mm yoga mat designed for high-intensity workouts and stretching."
+  }
+]);
+
+
+
+db.orders.insertMany([
+  {
+    order_id: "ORD-1003",
+    customer_id: ObjectId("60d5ec49f1b2c51234567892"),
+    status: "delivered",
+    items: ["LP-US-2026", "LP-KB-RGB"],
+    total_amount: 1409.00,
+    order_date: ISODate("2026-01-15T08:20:00Z")
+  },
+  {
+    order_id: "ORD-1004",
+    customer_id: ObjectId("60d5ec49f1b2c51234567893"),
+    status: "cancelled",
+    items: ["AP-TS-ORG"],
+    total_amount: 25.00,
+    order_date: ISODate("2026-02-10T11:45:00Z")
+  },
+  {
+    order_id: "ORD-1005",
+    customer_id: ObjectId("60d5ec49f1b2c51234567890"), // Same customer as first insert
+    status: "shipped",
+    items: ["SP-YM-PRO", "KT-CG-500"],
+    total_amount: 130.50,
+    order_date: ISODate("2026-03-22T16:15:00Z")
+  },
+  {
+    order_id: "ORD-1006",
+    customer_id: ObjectId("60d5ec49f1b2c51234567894"),
+    status: "processing",
+    items: ["W-HD-100"],
+    total_amount: 99.99,
+    order_date: ISODate("2026-04-05T09:00:00Z")
+  },
+  {
+    order_id: "ORD-1007",
+    customer_id: ObjectId("60d5ec49f1b2c51234567895"),
+    status: "shipped",
+    items: ["CH-ERG-05", "LP-KB-RGB"],
+    total_amount: 359.50,
+    order_date: ISODate("2026-04-06T13:10:00Z")
+  }
+]);
+
+
+
+se21144_db> db.products.insertMany([
+| {
+| name : "Headphones",
+| sku : "HD-100",
+| category : "Electronics",
+| price : 2000,
+| tags : ["tech","audio"],
+| description : "Noise-cancelling headphones with 20hr battery life"
+| },
+| {
+| name : "Organic Cotton T-Shirt",
+| sku : "OCTS-10",
+| category : "Apparel",
+| price : 799,
+| tags : ["sustainable","fashion","soft"],
+| description : "Eco-friendly nech t-shirt made from 100% certified organic cotton"
+| },
+| ])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('69d49daf2837751ec78563b1'),
+    '1': ObjectId('69d49daf2837751ec78563b2')
+  }
+}
+
+se21144_db> db.products.insertMany([
+| {
+| name : "Smart Coffee Grinder",
+| sku : "SCG-20",
+| category : "Kitchen",
+| price : 1000,
+| tags : ["coffee","smart home","precision"],
+| description : "App-controlled burr grinder with 40 precise grind settings."
+| },
+| {
+| name : "Durable Yoga Mat",
+| sku : "DYM-30",
+| category : "Fitness",
+| price : 500,
+| tags : ["yoga","exercise","grip"],
+| description : "Non-slip 6mm yoga mat designed for high-intensity workouts ans stretching."
+| }])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('69d49f442837751ec78563b3'),
+    '1': ObjectId('69d49f442837751ec78563b4')
+  }
+}
+
+
+se21144_db> db.products.find().pretty()
+[
+  {
+    _id: ObjectId('69d49daf2837751ec78563b1'),
+    name: 'Headphones',
+    sku: 'HD-100',
+    category: 'Electronics',
+    price: 2000,
+    tags: [ 'tech', 'audio' ],
+    description: 'Noise-cancelling headphones with 20hr battery life'
+  },
+  {
+    _id: ObjectId('69d49daf2837751ec78563b2'),
+    name: 'Organic Cotton T-Shirt',
+    sku: 'OCTS-10',
+    category: 'Apparel',
+    price: 799,
+    tags: [ 'sustainable', 'fashion', 'soft' ],
+    description: 'Eco-friendly nech t-shirt made from 100% certified organic cotton'
+  },
+  {
+    _id: ObjectId('69d49f442837751ec78563b3'),
+    name: 'Smart Coffee Grinder',
+    sku: 'SCG-20',
+    category: 'Kitchen',
+    price: 1000,
+    tags: [ 'coffee', 'smart home', 'precision' ],
+    description: 'App-controlled burr grinder with 40 precise grind settings.'
+  },
+  {
+    _id: ObjectId('69d49f442837751ec78563b4'),
+    name: 'Durable Yoga Mat',
+    sku: 'DYM-30',
+    category: 'Fitness',
+    price: 500,
+    tags: [ 'yoga', 'exercise', 'grip' ],
+    description: 'Non-slip 6mm yoga mat designed for high-intensity workouts ans stretching.'
+  }
+]
+
+
+se21144_db> db.orders.insertMany([
+| {
+| order_id : "ORD-1003",
+| customer_id : "user_1",
+| status : "deleivered",
+| items : ["DYM-30","SCG-20"],
+| total_amount : 1500,
+| order_data : new Date()
+| },
+| {
+| order_id : "ORD-1004",
+| customer_id : "user_2",
+| status : "deleeivered",
+| items : ["HD-100"],
+| total_amount : 2000,
+| order_date : new Date()
+| },
+| {
+| order_id : "ORD-1005",
+| customer_id : "user_3",
+| status : "deleivered",
+| items : ["OCTS-10"],
+| total_amount : 799,
+| order_date : new Date()
+| }])
+
+
+;
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('69d4a1622837751ec78563b5'),
+    '1': ObjectId('69d4a1622837751ec78563b6'),
+    '2': ObjectId('69d4a1622837751ec78563b7')
+  }
+}
+
+
+se21144_db> db.orders.find().pretty()
+[
+  {
+    _id: ObjectId('69d4a1622837751ec78563b5'),
+    order_id: 'ORD-1003',
+    customer_id: 'user_1',
+    status: 'deleivered',
+    items: [ 'DYM-30', 'SCG-20' ],
+    total_amount: 1500,
+    order_data: ISODate('2026-04-07T06:17:06.454Z')
+  },
+  {
+    _id: ObjectId('69d4a1622837751ec78563b6'),
+    order_id: 'ORD-1004',
+    customer_id: 'user_2',
+    status: 'deleeivered',
+    items: [ 'HD-100' ],
+    total_amount: 2000,
+    order_date: ISODate('2026-04-07T06:17:06.454Z')
+  },
+  {
+    _id: ObjectId('69d4a1622837751ec78563b7'),
+    order_id: 'ORD-1005',
+    customer_id: 'user_3',
+    status: 'deleivered',
+    items: [ 'OCTS-10' ],
+    total_amount: 799,
+    order_date: ISODate('2026-04-07T06:17:06.454Z')
+  }
+]
+
+se21144_db> db.products.createIndex({ sku: 1 }, { unique: true });
+sku_1
+se21144_db> db.products.find({sku : "OCTS-10"} )
+;
+[
+  {
+    _id: ObjectId('69d49daf2837751ec78563b2'),
+    name: 'Organic Cotton T-Shirt',
+    sku: 'OCTS-10',
+    category: 'Apparel',
+    price: 799,
+    tags: [ 'sustainable', 'fashion', 'soft' ],
+    description: 'Eco-friendly nech t-shirt made from 100% certified organic cotton'
+  }
+]
+
+
+se21144_db> db.products.createIndex({category : 1,price : 1})
+category_1_price_1
+
+se21144_db> db.products.find({$and : [{category : "Electronics"},{price :2000}]})
+[
+  {
+    _id: ObjectId('69d49daf2837751ec78563b1'),
+    name: 'Headphones',
+    sku: 'HD-100',
+    category: 'Electronics',
+    price: 2000,
+    tags: [ 'tech', 'audio' ],
+    description: 'Noise-cancelling headphones with 20hr battery life'
+  }
+]
+
+
+se21144_db> db.products.insertOne(
+| {
+| name : "Smartwatch",
+| sku : "SW-40",
+| category : "Electronics",
+| price : 1500,
+| tags : ["tech","health"],
+| description: "A special health and fitness measuring smartwatch"
+| }
+| )
+{
+  acknowledged: true,
+  insertedId: ObjectId('69d4a9432837751ec78563b8')
+}
+se21144_db> db.products.find().pretty()
+[
+  {
+    _id: ObjectId('69d49daf2837751ec78563b1'),
+    name: 'Headphones',
+    sku: 'HD-100',
+    category: 'Electronics',
+    price: 2000,
+    tags: [ 'tech', 'audio' ],
+    description: 'Noise-cancelling headphones with 20hr battery life'
+  },
+  {
+    _id: ObjectId('69d49daf2837751ec78563b2'),
+    name: 'Organic Cotton T-Shirt',
+    sku: 'OCTS-10',
+    category: 'Apparel',
+    price: 799,
+    tags: [ 'sustainable', 'fashion', 'soft' ],
+    description: 'Eco-friendly nech t-shirt made from 100% certified organic cotton'
+  },
+  {
+    _id: ObjectId('69d49f442837751ec78563b3'),
+    name: 'Smart Coffee Grinder',
+    sku: 'SCG-20',
+    category: 'Kitchen',
+    price: 1000,
+    tags: [ 'coffee', 'smart home', 'precision' ],
+    description: 'App-controlled burr grinder with 40 precise grind settings.'
+  },
+  {
+    _id: ObjectId('69d49f442837751ec78563b4'),
+    name: 'Durable Yoga Mat',
+    sku: 'DYM-30',
+    category: 'Fitness',
+    price: 500,
+    tags: [ 'yoga', 'exercise', 'grip' ],
+    description: 'Non-slip 6mm yoga mat designed for high-intensity workouts ans stretching.'
+  },
+  {
+    _id: ObjectId('69d4a9432837751ec78563b8'),
+    name: 'Smartwatch',
+    sku: 'SW-40',
+    category: 'Electronics',
+    price: 1500,
+    tags: [ 'tech', 'health' ],
+    description: 'A special health and fitness measuring smartwatch'
+  }
+]
+
+
+se21144_db> db.products.createIndex({tags : 1})
+tags_1
+se21144_db> db.products.find({tags : "tech"})
+[
+  {
+    _id: ObjectId('69d49daf2837751ec78563b1'),
+    name: 'Headphones',
+    sku: 'HD-100',
+    category: 'Electronics',
+    price: 2000,
+    tags: [ 'tech', 'audio' ],
+    description: 'Noise-cancelling headphones with 20hr battery life'
+  },
+  {
+    _id: ObjectId('69d4a9432837751ec78563b8'),
+    name: 'Smartwatch',
+    sku: 'SW-40',
+    category: 'Electronics',
+    price: 1500,
+    tags: [ 'tech', 'health' ],
+    description: 'A special health and fitness measuring smartwatch'
+  }
+]
+
+
+se21144_db> db.orders.createIndex({order_id : 1})
+order_id_1
+se21144_db> db.orders.find({order_id : "ORD-1004"})
+[
+  {
+    _id: ObjectId('69d4a1622837751ec78563b6'),
+    order_id: 'ORD-1004',
+    customer_id: 'user_2',
+    status: 'deleeivered',
+    items: [ 'HD-100' ],
+    total_amount: 2000,
+    order_date: ISODate('2026-04-07T06:17:06.454Z')
+  }
+]
+
+se21144_db> db.products.createIndex({category : "hashed"})
+category_hashed
+se21144_db> db.products.find({category : "Electronics"})
+[
+  {
+    _id: ObjectId('69d4a9432837751ec78563b8'),
+    name: 'Smartwatch',
+    sku: 'SW-40',
+    category: 'Electronics',
+    price: 1500,
+    tags: [ 'tech', 'health' ],
+    description: 'A special health and fitness measuring smartwatch'
+  },
+  {
+    _id: ObjectId('69d49daf2837751ec78563b1'),
+    name: 'Headphones',
+    sku: 'HD-100',
+    category: 'Electronics',
+    price: 2000,
+    tags: [ 'tech', 'audio' ],
+    description: 'Noise-cancelling headphones with 20hr battery life'
+  }
+]
+
+
+

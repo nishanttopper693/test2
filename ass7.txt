@@ -1,0 +1,195 @@
+db.courses.insertMany([
+  {
+    title: "Quantum Physics",
+    department: "Physics",
+    credits: 4,
+    instructor: { name: "Dr. Aris Thorne", experience: 12, designation: "Professor" },
+    enrollments: [
+      { student: "Alice", score: 92, status: "pass" },
+      { student: "Bob", score: 45, status: "fail" },
+      { student: "Charlie", score: 88, status: "pass" }
+    ]
+  },
+  {
+    title: "Data Structures",
+    department: "Computer Science",
+    credits: 3,
+    instructor: { name: "Prof. Sarah Jenkins", experience: 8, designation: "Associate Professor" },
+    enrollments: [
+      { student: "David", score: 76, status: "pass" },
+      { student: "Eve", score: 82, status: "pass" }
+    ]
+  },
+  {
+    title: "Organic Chemistry",
+    department: "Chemistry",
+    credits: 4,
+    instructor: { name: "Dr. Aris Thorne", experience: 12, designation: "Professor" },
+    enrollments: [
+      { student: "Alice", score: 85, status: "pass" },
+      { student: "Frank", score: 30, status: "fail" }
+    ]
+  }
+]);
+
+
+se21144_db> db.courses.aggregate([
+| {
+| 	$group : {
+| 		_id : "$department",
+| 		total : {$sum : 1} 
+| 	}
+| }
+| ])
+[
+  { _id: 'Physics', total: 1 },
+  { _id: 'History', total: 1 },
+  { _id: 'Computer Science', total: 2 },
+  { _id: 'Chemistry', total: 1 }
+]
+
+se21144_db> db.courses.aggregate([
+| { $sort : { credits : 1 } }
+| ])
+[
+  {
+    _id: ObjectId('69e71991ee191ecad58563b7'),
+    title: 'Data Structures',
+    department: 'Computer Science',
+    credits: 3,
+    instructor: {
+      name: 'Prof. Sarah Jenkins',
+      experience: 8,
+      designation: 'Associate Professor'
+    },
+    enrollments: [
+      { student: 'David', score: 76, status: 'pass' },
+      { student: 'Eve', score: 82, status: 'pass' }
+    ]
+  },
+  {
+    _id: ObjectId('69e71b1cee191ecad58563ba'),
+    title: 'Modern History',
+    department: 'History',
+    credits: 3,
+    instructor: {
+      name: 'Prof. Julian Barnes',
+      experience: 15,
+      designation: 'Senior Lecturer'
+    },
+    enrollments: [ { student: 'Judy', score: 78, status: 'pass' } ]
+  },
+  {
+    _id: ObjectId('69e71991ee191ecad58563b6'),
+    title: 'Quantum Physics',
+    department: 'Physics',
+    credits: 4,
+    instructor: { name: 'Dr. Aris Thorne', experience: 12, designation: 'Professor' },
+    enrollments: [
+      { student: 'Alice', score: 92, status: 'pass' },
+      { student: 'Bob', score: 45, status: 'fail' },
+      { student: 'Charlie', score: 88, status: 'pass' }
+    ]
+  },
+  {
+    _id: ObjectId('69e71991ee191ecad58563b8'),
+    title: 'Organic Chemistry',
+    department: 'Chemistry',
+    credits: 4,
+    instructor: { name: 'Dr. Aris Thorne', experience: 12, designation: 'Professor' },
+    enrollments: [
+      { student: 'Alice', score: 85, status: 'pass' },
+      { student: 'Frank', score: 30, status: 'fail' }
+    ]
+  },
+  {
+    _id: ObjectId('69e71b1cee191ecad58563b9'),
+    title: 'Machine Learning',
+    department: 'Computer Science',
+    credits: 4,
+    instructor: {
+      name: 'Dr. Elena Rodriguez',
+      experience: 10,
+      designation: 'Professor'
+    },
+    enrollments: [ { student: 'Grace', score: 95, status: 'pass' } ]
+  }
+]
+
+se21144_db> db.courses.aggregate([
+| { $project : { title : 1,department : 1,credits : 1}}])
+[
+  {
+    _id: ObjectId('69e71991ee191ecad58563b6'),
+    title: 'Quantum Physics',
+    department: 'Physics',
+    credits: 4
+  },
+  {
+    _id: ObjectId('69e71991ee191ecad58563b7'),
+    title: 'Data Structures',
+    department: 'Computer Science',
+    credits: 3
+  },
+  {
+    _id: ObjectId('69e71991ee191ecad58563b8'),
+    title: 'Organic Chemistry',
+    department: 'Chemistry',
+    credits: 4
+  },
+  {
+    _id: ObjectId('69e71b1cee191ecad58563b9'),
+    title: 'Machine Learning',
+    department: 'Computer Science',
+    credits: 4
+  },
+  {
+    _id: ObjectId('69e71b1cee191ecad58563ba'),
+    title: 'Modern History',
+    department: 'History',
+    credits: 3
+  }
+]
+
+
+se21144_db> db.courses.aggregate([
+| {$unwind : "$enrollments"},
+| { $group : 
+| { _id : "$department",
+| totalStudent : {$sum : 1},
+| avgScore : { $avg : "$enrollments.score"}
+| }
+| }
+| ])
+| 
+[
+  { _id: 'Physics', totalStudent: 3, avgScore: 75 },
+  { _id: 'History', totalStudent: 1, avgScore: 78 },
+  { _id: 'Chemistry', totalStudent: 2, avgScore: 57.5 },
+  {
+    _id: 'Computer Science',
+    totalStudent: 3,
+    avgScore: 84.33333333333333
+  }
+]
+
+se21144_db> db.courses.aggregate([
+| {$unwind : "$enrollments"},
+| {$group : {
+| _id : "$enrollments.student",
+| avgScore : { $avg : "$enrollments.score" }
+| }
+| },
+| { $match : { avgScore : { $gte : 85 } } },
+| { $sort : { avgScore : -1 } }
+| ])
+[
+  { _id: 'Grace', avgScore: 95 },
+  { _id: 'Alice', avgScore: 88.5 },
+  { _id: 'Charlie', avgScore: 88 }
+]
+
+
+
+
+

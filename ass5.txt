@@ -1,0 +1,464 @@
+se21144_db> db.teachers.insertMany([ { name : "John Doe", qualification : "M.Tech", dept_details : { name : "CS" , building : "A"}, experience : 5, salary : 50000, date_of_joining : new Date("2026-03-06"),appointment_nature : "Permanent" , expertise : ["Java","DBMS"] } ])
+{
+  acknowledged: true,
+  insertedIds: { '0': ObjectId('69aa735cc4ba9c4f63544ca7') }
+}
+se21144_db> db.teachers.find({expertise : "Java"})
+[
+  {
+    _id: ObjectId('69aa735cc4ba9c4f63544ca7'),
+    name: 'John Doe',
+    qualification: 'M.Tech',
+    dept_details: { name: 'CS', building: 'A' },
+    experience: 5,
+    salary: 50000,
+    date_of_joining: ISODate('2026-03-06T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Java', 'DBMS' ]
+  }
+]
+se21144_db> db.teachers.find().pretty()
+[
+  {
+    _id: ObjectId('69aa735cc4ba9c4f63544ca7'),
+    name: 'John Doe',
+    qualification: 'M.Tech',
+    dept_details: { name: 'CS', building: 'A' },
+    experience: 5,
+    salary: 50000,
+    date_of_joining: ISODate('2026-03-06T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Java', 'DBMS' ]
+  }
+]
+
+se21144_db> db.teachers.insertMany([ { name : "Amy Willis", qualification : "B.Tech", dept_details : { name : "IT",building : "B"}, experience : 3, salary : 30000, date_of_joining : new Date("2026-03-12"), appointment_nature : "Permanent", expertise : ["CNT","DSA"] }, {
+... name : "Chris Evans",
+... qualification : "M.Tech",
+... dept_details : { name: "ENTC",building : "C"},
+... experience : 10,
+... salary : 70000,
+... date_of_joining : new Date("2024-06-01"),
+... appointment_nature : "Permanent",
+... expertise : ["Semiconductors","Embedded Systems"]
+... }])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('69aa782dc4ba9c4f63544ca8'),
+    '1': ObjectId('69aa782dc4ba9c4f63544ca9')
+  }
+}
+se21144_db> db.teachers.find().pretty()
+[
+  {
+    _id: ObjectId('69aa735cc4ba9c4f63544ca7'),
+    name: 'John Doe',
+    qualification: 'M.Tech',
+    dept_details: { name: 'CS', building: 'A' },
+    experience: 5,
+    salary: 50000,
+    date_of_joining: ISODate('2026-03-06T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Java', 'DBMS' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca8'),
+    name: 'Amy Willis',
+    qualification: 'B.Tech',
+    dept_details: { name: 'IT', building: 'B' },
+    experience: 3,
+    salary: 30000,
+    date_of_joining: ISODate('2026-03-12T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'CNT', 'DSA' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca9'),
+    name: 'Chris Evans',
+    qualification: 'M.Tech',
+    dept_details: { name: 'ENTC', building: 'C' },
+    experience: 10,
+    salary: 70000,
+    date_of_joining: ISODate('2024-06-01T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Semiconductors', 'Embedded Systems' ]
+  }
+]
+
+se21144_db> db.teachers.find({expertise : "Semiconductors"},{name : 1,_id : 0})
+[ { name: 'Chris Evans' } ]
+
+se21144_db> db.teachers.find({ $and: [ { experience : {$gt : 5}}, {salary : {$gt : 65000}} ]})
+[
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca9'),
+    name: 'Chris Evans',
+    qualification: 'M.Tech',
+    dept_details: { name: 'ENTC', building: 'C' },
+    experience: 10,
+    salary: 70000,
+    date_of_joining: ISODate('2024-06-01T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Semiconductors', 'Embedded Systems' ]
+  }
+]
+
+se21144_db> db.teachers.find({
+... $or : [
+... {experience : {$lt :5}},
+... {salary : {$gt : 40000}}
+... ]})
+[
+  {
+    _id: ObjectId('69aa735cc4ba9c4f63544ca7'),
+    name: 'John Doe',
+    qualification: 'M.Tech',
+    dept_details: { name: 'CS', building: 'A' },
+    experience: 5,
+    salary: 50000,
+    date_of_joining: ISODate('2026-03-06T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Java', 'DBMS' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca8'),
+    name: 'Amy Willis',
+    qualification: 'B.Tech',
+    dept_details: { name: 'IT', building: 'B' },
+    experience: 3,
+    salary: 30000,
+    date_of_joining: ISODate('2026-03-12T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'CNT', 'DSA' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca9'),
+    name: 'Chris Evans',
+    qualification: 'M.Tech',
+    dept_details: { name: 'ENTC', building: 'C' },
+    experience: 10,
+    salary: 70000,
+    date_of_joining: ISODate('2024-06-01T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Semiconductors', 'Embedded Systems' ]
+  }
+]
+
+se21144_db> db.teachers.find({
+... $or : [
+... {"dept_details.name" : "IT"},
+... {expertise : "Java"}
+... ]})
+[
+  {
+    _id: ObjectId('69aa735cc4ba9c4f63544ca7'),
+    name: 'John Doe',
+    qualification: 'M.Tech',
+    dept_details: { name: 'CS', building: 'A' },
+    experience: 5,
+    salary: 50000,
+    date_of_joining: ISODate('2026-03-06T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Java', 'DBMS' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca8'),
+    name: 'Amy Willis',
+    qualification: 'B.Tech',
+    dept_details: { name: 'IT', building: 'B' },
+    experience: 3,
+    salary: 30000,
+    date_of_joining: ISODate('2026-03-12T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'CNT', 'DSA' ]
+  }
+]
+
+se21144_db> db.teachers.updateMany(
+... {qualification : "B.Tech"},
+... {$mul : {salary : 1.10}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+se21144_db> db.teachers.find().pretty()
+[
+  {
+    _id: ObjectId('69aa735cc4ba9c4f63544ca7'),
+    name: 'John Doe',
+    qualification: 'M.Tech',
+    dept_details: { name: 'CS', building: 'A' },
+    experience: 5,
+    salary: 50000,
+    date_of_joining: ISODate('2026-03-06T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Java', 'DBMS' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca8'),
+    name: 'Amy Willis',
+    qualification: 'B.Tech',
+    dept_details: { name: 'IT', building: 'B' },
+    experience: 3,
+    salary: 33000,
+    date_of_joining: ISODate('2026-03-12T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'CNT', 'DSA' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca9'),
+    name: 'Chris Evans',
+    qualification: 'M.Tech',
+    dept_details: { name: 'ENTC', building: 'C' },
+    experience: 10,
+    salary: 70000,
+    date_of_joining: ISODate('2024-06-01T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Semiconductors', 'Embedded Systems' ]
+  }
+]
+
+se21144_db> db.teachers.updateMany(
+... {name: "Amy Willis"},
+... {$push : {expertise : "ML"}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+se21144_db> db.teachers.find().pretty()
+[
+  {
+    _id: ObjectId('69aa735cc4ba9c4f63544ca7'),
+    name: 'John Doe',
+    qualification: 'M.Tech',
+    dept_details: { name: 'CS', building: 'A' },
+    experience: 5,
+    salary: 50000,
+    date_of_joining: ISODate('2026-03-06T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Java', 'DBMS' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca8'),
+    name: 'Amy Willis',
+    qualification: 'B.Tech',
+    dept_details: { name: 'IT', building: 'B' },
+    experience: 3,
+    salary: 33000,
+    date_of_joining: ISODate('2026-03-12T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'CNT', 'DSA', 'ML' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca9'),
+    name: 'Chris Evans',
+    qualification: 'M.Tech',
+    dept_details: { name: 'ENTC', building: 'C' },
+    experience: 10,
+    salary: 70000,
+    date_of_joining: ISODate('2024-06-01T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Semiconductors', 'Embedded Systems' ]
+  }
+]
+
+se21144_db> db.teachers.updateOne(
+... {name : "Chris Evans"},
+... {$set : {experience : 11 , salary : 75000}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+se21144_db> db.teachers.find().pretty()
+[
+  {
+    _id: ObjectId('69aa735cc4ba9c4f63544ca7'),
+    name: 'John Doe',
+    qualification: 'M.Tech',
+    dept_details: { name: 'CS', building: 'A' },
+    experience: 5,
+    salary: 50000,
+    date_of_joining: ISODate('2026-03-06T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Java', 'DBMS' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca8'),
+    name: 'Amy Willis',
+    qualification: 'B.Tech',
+    dept_details: { name: 'IT', building: 'B' },
+    experience: 3,
+    salary: 33000,
+    date_of_joining: ISODate('2026-03-12T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'CNT', 'DSA', 'ML' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca9'),
+    name: 'Chris Evans',
+    qualification: 'M.Tech',
+    dept_details: { name: 'ENTC', building: 'C' },
+    experience: 11,
+    salary: 75000,
+    date_of_joining: ISODate('2024-06-01T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Semiconductors', 'Embedded Systems' ]
+  }
+]
+
+se21144_db> db.teachers.deleteMany({experience : {$lte : 3}})
+{ acknowledged: true, deletedCount: 1 }
+se21144_db> db.teachers.find().pretty()
+[
+  {
+    _id: ObjectId('69aa735cc4ba9c4f63544ca7'),
+    name: 'John Doe',
+    qualification: 'M.Tech',
+    dept_details: { name: 'CS', building: 'A' },
+    experience: 5,
+    salary: 50000,
+    date_of_joining: ISODate('2026-03-06T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Java', 'DBMS' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca9'),
+    name: 'Chris Evans',
+    qualification: 'M.Tech',
+    dept_details: { name: 'ENTC', building: 'C' },
+    experience: 11,
+    salary: 75000,
+    date_of_joining: ISODate('2024-06-01T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Semiconductors', 'Embedded Systems' ]
+  }
+]
+
+se21144_db> db.teachers.insertMany([
+... {
+... name : 'Tony Stark',
+... qualification : 'M.Tech',
+... dept_details : {name : 'Robotics',building : 'D'},
+... experience : 4,
+... salary : 35000,
+... date_of_joining : new Date('2026-01-01'),
+... appointment_natur : 'Temporary',
+... experrtise : ['AI','RoboMechanics']
+... }
+... ])
+{
+  acknowledged: true,
+  insertedIds: { '0': ObjectId('69b3a9ee423facdd4d544ca8') }
+}
+
+
+se21144_db> db.teachers.insertMany([ 
+...   { 
+...     name: 'Tom Cruise', 
+...     qualification: 'B.Tech', 
+...     dept_details: { name: 'Mechanics', building: 'E' }, 
+...     experience: 7, 
+...     salary: 45000, 
+...     date_of_joining: new Date('2020-03-02'),
+...     appointment_nature: 'Permanent', 
+...     expertise: ['AI', 'NLP']
+...   }
+... ])
+{
+  acknowledged: true,
+  insertedIds: { '0': ObjectId('69b3aef6423facdd4d544ca9') }
+}
+
+se21144_db> db.teachers.find().pretty()
+[
+  {
+    _id: ObjectId('69aa735cc4ba9c4f63544ca7'),
+    name: 'John Doe',
+    qualification: 'M.Tech',
+    dept_details: { name: 'CS', building: 'A' },
+    experience: 5,
+    salary: 50000,
+    date_of_joining: ISODate('2026-03-06T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Java', 'DBMS' ]
+  },
+  {
+    _id: ObjectId('69aa782dc4ba9c4f63544ca9'),
+    name: 'Chris Evans',
+    qualification: 'M.Tech',
+    dept_details: { name: 'ENTC', building: 'C' },
+    experience: 11,
+    salary: 75000,
+    date_of_joining: ISODate('2024-06-01T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'Semiconductors', 'Embedded Systems' ]
+  },
+  {
+    _id: ObjectId('69aa80e9c4ba9c4f63544caa'),
+    name: 'Chris Hemsworth',
+    qualification: 'B.Tech',
+    dept_details: { name: 'AIDS', building: 'c' },
+    experience: 6,
+    salary: 60000,
+    date_of_joining: ISODate('2024-04-07T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'NLP', 'Deep Learning' ]
+  },
+  {
+    _id: ObjectId('69b3a9ee423facdd4d544ca8'),
+    name: 'Tony Stark',
+    qualification: 'M.Tech',
+    dept_details: { name: 'Robotics', building: 'D' },
+    experience: 4,
+    salary: 35000,
+    date_of_joining: ISODate('2026-01-01T00:00:00.000Z'),
+    appointment_natur: 'Temporary',
+    experrtise: [ 'AI', 'RoboMechanics' ]
+  },
+  {
+    _id: ObjectId('69b3aef6423facdd4d544ca9'),
+    name: 'Tom Cruise',
+    qualification: 'B.Tech',
+    dept_details: { name: 'Mechanics', building: 'E' },
+    experience: 7,
+    salary: 45000,
+    date_of_joining: ISODate('2020-03-02T00:00:00.000Z'),
+    appointment_nature: 'Permanent',
+    expertise: [ 'AI', 'NLP' ]
+  }
+]
+
+
+se21144_db> db.teachers.find({expertise : 'AI'},{name : 1,_id : 0})
+[ { name: 'Tony Stark' }, { name: 'Tom Cruise' } ]
+se21144_db> db.teachers.find({expertise : 'AI'},{name : 1,qualification : 1,_id : 0})
+[
+  { name: 'Tony Stark', qualification: 'M.Tech' },
+  { name: 'Tom Cruise', qualification: 'B.Tech' }
+]
+
+
+se21144_db> db.teachers.updateOne(
+... {name : 'Tom Cruise'},
+... {
+... $set : {salary : 50000}
+... }
+... )
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
